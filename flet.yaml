@@ -1,0 +1,12 @@
+name: TalkLand
+description: Language learning app with speech recognition and translation
+
+# Android permissions
+permissions:
+  - RECORD_AUDIO
+  - INTERNET
+
+# App metadata
+app_name: TalkLand
+package_name: com.talkland.app
+version: 1.0.0

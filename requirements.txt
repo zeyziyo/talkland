@@ -1,0 +1,16 @@
+flet>=0.80.0
+
+# 음성 처리
+pyttsx3
+sounddevice
+scipy
+
+# STT (Whisper)
+openai-whisper
+
+# 기타
+numpy
+deep-translator
+edge-tts
+pygame
+SpeechRecognition
