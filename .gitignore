@@ -47,3 +47,9 @@ backups/
 
 # Progress files
 progress.json
+
+# Android signing files
+*.jks
+*.keystore
+upload-keystore.jks
+upload-keystore.jks.base64
