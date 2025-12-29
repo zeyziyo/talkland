@@ -17,17 +17,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          flutter-version: '3.19.6'
-        env:
-          FLUTTER_HOME: ${{ github.workspace }}/flutter
+          python-version: '3.12'
 
-      - name: Verify Flutter installation
-        run: |
-          flutter --version
-          flutter doctor
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Flet
+        run: pip install flet
 
       - name: Restore Android keystore
         run: |
@@ -44,14 +46,6 @@ jobs:
         run: |
           mkdir -p android
           mv key.properties android/key.properties
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-
-      - name: Install Flet
-        run: pip install flet
 
       - name: Flet Build APK
         run: |
