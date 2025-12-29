@@ -21,7 +21,13 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.6'
+        env:
+          FLUTTER_HOME: ${{ github.workspace }}/flutter
 
+      - name: Verify Flutter installation
+        run: |
+          flutter --version
+          flutter doctor
 
       - name: Restore Android keystore
         run: |
