@@ -1,8 +1,2 @@
 flet>=0.80.0
-
-# 기타
-numpy
 deep-translator
-edge-tts
-pygame
-SpeechRecognition

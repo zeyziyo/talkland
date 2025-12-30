@@ -3,3 +3,7 @@ pyttsx3
 sounddevice
 scipy
 openai-whisper
+numpy
+edge-tts
+pygame
+SpeechRecognition
