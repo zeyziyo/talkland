@@ -28,20 +28,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
-          cache: true
-
-      - name: Verify Flutter installation
-        run: |
-          flutter --version
-          flutter doctor -v
-          echo "FLUTTER_ROOT=$FLUTTER_ROOT"
-          echo "Flutter location: $(which flutter)"
-
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -65,8 +51,5 @@ jobs:
           mv key.properties android/key.properties
 
       - name: Flet Build APK
-        env:
-          FLUTTER_ROOT: ${{ env.FLUTTER_ROOT }}
         run: |
-          echo "Building with Flutter at: $FLUTTER_ROOT"
-          flet build apk --verbose
+          flet build apk --verbose --no-rich-output
