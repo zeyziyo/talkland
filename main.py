@@ -17,15 +17,31 @@ def main(page: ft.Page) -> None:
     # -----------------
     mode: str = "translate"  # translate | practice
     
+    # Debug log display (Android debugging)
+    debug_log = ft.Text("", size=10, color=ft.colors.GREY_700, selectable=True)
+    debug_logs = []
+    
+    def add_log(message: str):
+        """Add a log message to the debug display"""
+        print(message)  # Also print to console
+        debug_logs.append(message)
+        if len(debug_logs) > 10:  # Keep only last 10 logs
+            debug_logs.pop(0)
+        debug_log.value = "\n".join(debug_logs)
+        debug_log.update()
+    
     # Speech backend 초기화 (에러 처리 추가)
     try:
-        print(f"Initializing speech backend for platform: {page.platform}")
+        add_log(f"Platform: {page.platform}")
+        add_log("Initializing speech backend...")
         speech_backend = create_speech_backend(page)
-        print(f"Speech backend initialized successfully: {type(speech_backend).__name__}")
+        add_log(f"✅ Backend: {type(speech_backend).__name__}")
     except Exception as e:
-        print(f"Speech backend initialization failed: {e}")
+        add_log(f"❌ Init failed: {e}")
         import traceback
-        traceback.print_exc()
+        error_details = traceback.format_exc()
+        # Show first line of traceback
+        add_log(error_details.split('\n')[0] if error_details else "Unknown error")
         # 음성 기능 없이도 앱이 실행되도록 더미 백엔드 사용
         speech_backend = None
 
@@ -67,6 +83,7 @@ def main(page: ft.Page) -> None:
     # -----------------
     page.add(
         title,
+        debug_log,  # Debug log display
         ft.Divider(),
         mode_selector,
         ft.Divider(),

@@ -39,14 +39,23 @@ def create_speech_backend(page: Any) -> SpeechBackend:
     반환:
     - SpeechBackend 구현체
     """
+    
+    print(f"[Factory] Creating backend for platform: {page.platform}, sys.platform: {sys.platform}")
 
-    # Web (Pyodide) or Mobile (Android/iOS)
-    # page.platform gives "android", "ios", "macos", "linux", "windows" or "web" (if generic)
-    # sys.platform == "emscripten" covers Pyodide web.
-    # We want WebSpeechBackend for Android/iOS as well.
-    if is_web_runtime() or page.platform in ["android", "ios"]:
+    # Web (Pyodide only) - uses JavaScript Web Speech API
+    if is_web_runtime():
+        print("[Factory] Using WebSpeechBackend for web platform")
         return WebSpeechBackend(page)
+    
+    # Android/iOS - use dummy backend
+    # Note: page.on_event and page.run_js don't work in Flet native mobile apps
+    if page.platform in ["android", "ios"]:
+        print(f"[Factory] Using DummySpeechBackend for {page.platform}")
+        from .dummy_speech_backend import DummySpeechBackend
+        return DummySpeechBackend()
 
     # Desktop - import only when needed to avoid loading sounddevice on mobile
+    print("[Factory] Using DesktopSpeechBackend for desktop")
     from .desktop_speech_backend import DesktopSpeechBackend
     return DesktopSpeechBackend()
+
