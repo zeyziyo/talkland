@@ -7,7 +7,7 @@ def fake_stt_result() -> str:
 class Mode2Section(ft.Column):
     def __init__(self, page: ft.Page):
         super().__init__()
-        # self.page = page  <-- REMOVED: Managed by Flet Control
+        self.page = page  # Restore: needed for page.update() calls
 
         
         self.native_sentence = ft.Text(

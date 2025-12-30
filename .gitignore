@@ -53,3 +53,6 @@ progress.json
 *.keystore
 upload-keystore.jks
 upload-keystore.jks.base64
+
+# my documents files
+docs/

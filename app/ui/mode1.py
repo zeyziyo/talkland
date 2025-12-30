@@ -5,7 +5,7 @@ from app.text.translate import translate
 class Mode1Section(ft.Column):
     def __init__(self, page: ft.Page, speech_backend, source_lang="ko", target_lang="es"):
         super().__init__()
-        # self.page = page  <-- REMOVED: Managed by Flet Control
+        self.page = page  # Restore: needed for page.update() calls
 
         self.speech_backend = speech_backend
         self.source_lang = source_lang
