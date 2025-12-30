@@ -11,7 +11,17 @@
 추후 Google / DeepL / OpenAI API로 교체 가능하다.
 """
 
-from deep_translator import GoogleTranslator
+# Try to import deep_translator, fallback to mock if not available
+try:
+    from deep_translator import GoogleTranslator
+    TRANSLATOR_AVAILABLE = True
+    print("[Translate] GoogleTranslator loaded successfully")
+except ImportError as e:
+    print(f"[Translate] WARNING: deep_translator not available: {e}")
+    TRANSLATOR_AVAILABLE = False
+except Exception as e:
+    print(f"[Translate] ERROR loading deep_translator: {e}")
+    TRANSLATOR_AVAILABLE = False
 
 def translate(text: str, src_lang: str, dst_lang: str) -> str:
     """
@@ -29,6 +39,10 @@ def translate(text: str, src_lang: str, dst_lang: str) -> str:
     normalized = text.strip()
     if not normalized:
         return ""
+
+    # If translator is not available, return a message
+    if not TRANSLATOR_AVAILABLE:
+        return f"[번역 기능 사용 불가] {normalized}"
 
     try:
         translated = GoogleTranslator(source=src_lang, target=dst_lang).translate(normalized)

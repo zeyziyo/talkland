@@ -18,7 +18,7 @@ def main(page: ft.Page) -> None:
     mode: str = "translate"  # translate | practice
     
     # Debug log display (Android debugging)
-    debug_log = ft.Text("", size=10, color=ft.colors.GREY_700, selectable=True)
+    debug_log = ft.Text("", size=10, color=ft.Colors.GREY_700, selectable=True)
     debug_logs = []
     
     def add_log(message: str):
@@ -28,7 +28,8 @@ def main(page: ft.Page) -> None:
         if len(debug_logs) > 10:  # Keep only last 10 logs
             debug_logs.pop(0)
         debug_log.value = "\n".join(debug_logs)
-        debug_log.update()
+        if debug_log.page:
+            debug_log.update()
     
     # Speech backend 초기화 (에러 처리 추가)
     try:
