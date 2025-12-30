@@ -7,7 +7,7 @@ def fake_stt_result() -> str:
 class Mode2Section(ft.Column):
     def __init__(self, page: ft.Page):
         super().__init__()
-        self.page = page  # Restore: needed for page.update() calls
+        self._page = page  # Store page reference
 
         
         self.native_sentence = ft.Text(
@@ -41,12 +41,12 @@ class Mode2Section(ft.Column):
         self.visible = False
         self.spacing = 15
 
-    def start_practice(self, e: ft.Event) -> None:
+    def start_practice(self, e) -> None:
         self.slot_text.value = "🎰"
         self.timer_text.value = "발음 중..."
-        self.page.update()
+        self._page.update()
 
         spoken = fake_stt_result()
         self.slot_text.value = spoken
         self.result_text.value = "정확도: 80%"
-        self.page.update()
+        self._page.update()

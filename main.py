@@ -15,7 +15,14 @@ def main(page: ft.Page) -> None:
     # 공통 상태
     # -----------------
     mode: str = "translate"  # translate | practice
-    speech_backend = create_speech_backend(page)
+    
+    # Speech backend 초기화 (에러 처리 추가)
+    try:
+        speech_backend = create_speech_backend(page)
+    except Exception as e:
+        print(f"Speech backend initialization failed: {e}")
+        # 음성 기능 없이도 앱이 실행되도록 더미 백엔드 사용
+        speech_backend = None
 
     # -----------------
     # 공통 UI

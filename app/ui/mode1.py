@@ -5,7 +5,7 @@ from app.text.translate import translate
 class Mode1Section(ft.Column):
     def __init__(self, page: ft.Page, speech_backend, source_lang="ko", target_lang="es"):
         super().__init__()
-        self.page = page  # Restore: needed for page.update() calls
+        self._page = page  # Store page reference
 
         self.speech_backend = speech_backend
         self.source_lang = source_lang
@@ -98,7 +98,7 @@ class Mode1Section(ft.Column):
             icon_size=32,
             icon_color=ft.Colors.GREEN,
             tooltip="스페인어 듣기",
-            on_click=lambda _: self.speech_backend.speak(self.mode1_translated.value or "No text", lang=self.target_lang),
+            on_click=self.on_tts_click,
             disabled=False,
         )
         
@@ -122,9 +122,20 @@ class Mode1Section(ft.Column):
         
         self.mode1_tts_btn.disabled = False
         self.mode1_tts_btn.update()
+    
+    def on_tts_click(self, e):
+        if self.speech_backend is None:
+            return
+        self.speech_backend.speak(self.mode1_translated.value or "No text", lang=self.target_lang)
 
     def run_mode1(self, e=None):
         print(f"run_mode1 called. Current state: is_recording={self.is_recording}")
+        
+        # Speech backend 사용 불가 체크
+        if self.speech_backend is None:
+            self.mode1_result.value = "음성 인식 기능을 사용할 수 없습니다."
+            self.mode1_result.update()
+            return
         
         try:
             if not self.is_recording:
@@ -142,7 +153,7 @@ class Mode1Section(ft.Column):
                 self.mode1_start_btn.update()
                 self.mode1_stop_btn.update()
                 self.mode1_result.update()
-                self.page.update()
+                self._page.update()
                 
                 self.speech_backend.start_stt(on_silence=self.on_silence_detected)
                 print("Backend recording started.")
@@ -172,17 +183,20 @@ class Mode1Section(ft.Column):
         self.mode1_start_btn.disabled = True
         # self.mode1_start_btn.style = None
         
-        self.page.update()
+        self._page.update()
         
         try:
-             text = self.speech_backend.stop_stt()
-             print(f"Transcribed text: {text}")
-             
-             if text:
-                 self.mode1_result.value = text
+             if self.speech_backend is None:
+                 self.mode1_result.value = "음성 인식 기능을 사용할 수 없습니다."
              else:
-                 self.mode1_result.hint_text = "음성을 인식하지 못했습니다. 다시 시도해주세요."
-                 # self.mode1_result.value = "음성을 인식하지 못했습니다. 다시 시도해주세요."
+                 text = self.speech_backend.stop_stt()
+                 print(f"Transcribed text: {text}")
+                 
+                 if text:
+                     self.mode1_result.value = text
+                 else:
+                     self.mode1_result.hint_text = "음성을 인식하지 못했습니다. 다시 시도해주세요."
+                     # self.mode1_result.value = "음성을 인식하지 못했습니다. 다시 시도해주세요."
         except Exception as ex:
              print(f"STT Error: {ex}")
              self.mode1_result.value = f"변환 오류: {ex}"
@@ -197,7 +211,7 @@ class Mode1Section(ft.Column):
         self.mode1_stop_btn.update()
         self.mode1_start_btn.update()
         self.mode1_result.update()
-        self.page.update()
+        self._page.update()
 
     def on_silence_detected(self):
         print("Silence detected! Auto-stopping...")
