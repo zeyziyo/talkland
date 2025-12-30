@@ -12,7 +12,6 @@ from typing import Any
 
 from .speech_backend import SpeechBackend
 from .web_speech_backend import WebSpeechBackend
-from .desktop_speech_backend import DesktopSpeechBackend
 
 
 def is_web_runtime() -> bool:
@@ -48,5 +47,6 @@ def create_speech_backend(page: Any) -> SpeechBackend:
     if is_web_runtime() or page.platform in ["android", "ios"]:
         return WebSpeechBackend(page)
 
-    # Desktop
+    # Desktop - import only when needed to avoid loading sounddevice on mobile
+    from .desktop_speech_backend import DesktopSpeechBackend
     return DesktopSpeechBackend()
