@@ -52,4 +52,4 @@ jobs:
 
       - name: Flet Build APK
         run: |
-          flet build apk --verbose --no-rich-output
+          yes | flet build apk --verbose
