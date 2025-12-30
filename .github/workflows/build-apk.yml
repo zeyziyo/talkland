@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK & AAB
 
 on:
   push:
@@ -50,6 +50,28 @@ jobs:
           mkdir -p android
           mv key.properties android/key.properties
 
+      # ✅ APK 빌드
       - name: Flet Build APK
         run: |
           yes | flet build apk --verbose
+
+      # ✅ AAB 빌드 (Play Store용)
+      - name: Flet Build AAB
+        run: |
+          yes | flet build aab --verbose
+
+      # 📦 APK 업로드
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: talkland-apk
+          path: build/apk/*.apk
+          if-no-files-found: error
+
+      # 📦 AAB 업로드
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: talkland-aab
+          path: build/aab/*.aab
+          if-no-files-found: error
