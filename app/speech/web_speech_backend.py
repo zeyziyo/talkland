@@ -33,67 +33,93 @@ class WebSpeechBackend(SpeechBackend):
         """
         page: Flet Page (JS 브릿지 포함)
         """
+        print("[WebSpeechBackend] Initializing...")
         self.page: Any = page
         self._result: Optional[str] = None
         self._on_silence = None
 
-        # JS → Python 이벤트 수신
-        getattr(self.page, "on_event")(
-            "stt-result",
-            self._on_stt_result,
-        )
+        try:
+            # JS → Python 이벤트 수신
+            print("[WebSpeechBackend] Setting up event listener...")
+            on_event_func = getattr(self.page, "on_event", None)
+            if on_event_func is None:
+                raise AttributeError("page.on_event not available")
+            
+            on_event_func("stt-result", self._on_stt_result)
+            print("[WebSpeechBackend] Event listener registered successfully")
 
-        # JS 로드 (인라인 방식으로 변경 - Android 호환성)
-        js_code = """
-        let recognition = null;
+            # JS 로드 (인라인 방식으로 변경 - Android 호환성)
+            print("[WebSpeechBackend] Loading inline JavaScript...")
+            js_code = """
+let recognition = null;
 
-        // =========================
-        // STT
-        // =========================
-        function startSTT(lang = 'ko-KR') {
-            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-                flet.sendEvent("stt-result", { text: "" });
-                return;
-            }
+// =========================
+// STT
+// =========================
+function startSTT(lang = 'ko-KR') {
+    console.log('[WebSpeech] Starting STT with lang:', lang);
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        console.log('[WebSpeech] Speech recognition not supported');
+        flet.sendEvent("stt-result", { text: "" });
+        return;
+    }
 
-            const SpeechRecognition =
-                window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
 
-            recognition = new SpeechRecognition();
-            recognition.lang = lang;
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
+    recognition = new SpeechRecognition();
+    recognition.lang = lang;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
-            recognition.onresult = (event) => {
-                const text = event.results[0][0].transcript;
-                flet.sendEvent("stt-result", { text });
-            };
+    recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        console.log('[WebSpeech] STT result:', text);
+        flet.sendEvent("stt-result", { text });
+    };
 
-            recognition.onerror = () => {
-                flet.sendEvent("stt-result", { text: "" });
-            };
+    recognition.onerror = (error) => {
+        console.log('[WebSpeech] STT error:', error);
+        flet.sendEvent("stt-result", { text: "" });
+    };
 
-            recognition.start();
-        }
+    recognition.start();
+    console.log('[WebSpeech] STT started');
+}
 
-        function stopSTT() {
-            if (recognition) {
-                recognition.stop();
-                recognition = null;
-            }
-        }
+function stopSTT() {
+    console.log('[WebSpeech] Stopping STT');
+    if (recognition) {
+        recognition.stop();
+        recognition = null;
+    }
+}
 
-        // =========================
-        // TTS
-        // =========================
-        function speak(text, slow = false, lang = 'ko-KR') {
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = lang;
-            utter.rate = slow ? 0.7 : 1.0;
-            speechSynthesis.speak(utter);
-        }
-        """
-        getattr(self.page, "run_js")(js_code)
+// =========================
+// TTS
+// =========================
+function speak(text, slow = false, lang = 'ko-KR') {
+    console.log('[WebSpeech] Speaking:', text, 'lang:', lang);
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    utter.rate = slow ? 0.7 : 1.0;
+    speechSynthesis.speak(utter);
+}
+
+console.log('[WebSpeech] JavaScript loaded successfully');
+"""
+            run_js_func = getattr(self.page, "run_js", None)
+            if run_js_func is None:
+                raise AttributeError("page.run_js not available")
+            
+            run_js_func(js_code)
+            print("[WebSpeechBackend] JavaScript loaded successfully")
+            
+        except Exception as e:
+            print(f"[WebSpeechBackend] Initialization error: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
 
     # =========================
     # STT

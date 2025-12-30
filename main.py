@@ -10,6 +10,7 @@ TARGET_LANG = "es"
 def main(page: ft.Page) -> None:
     page.title = "TalkLand"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.padding = ft.padding.only(top=40)  # Safe area for Android status bar
 
     # -----------------
     # 공통 상태
@@ -18,9 +19,13 @@ def main(page: ft.Page) -> None:
     
     # Speech backend 초기화 (에러 처리 추가)
     try:
+        print(f"Initializing speech backend for platform: {page.platform}")
         speech_backend = create_speech_backend(page)
+        print(f"Speech backend initialized successfully: {type(speech_backend).__name__}")
     except Exception as e:
         print(f"Speech backend initialization failed: {e}")
+        import traceback
+        traceback.print_exc()
         # 음성 기능 없이도 앱이 실행되도록 더미 백엔드 사용
         speech_backend = None
 
