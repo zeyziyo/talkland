@@ -10,7 +10,7 @@ TARGET_LANG = "es"
 def main(page: ft.Page) -> None:
     page.title = "TalkLand"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.padding = ft.padding.only(top=40)  # Safe area for Android status bar
+    page.padding = 40  # Safe area for Android status bar
 
     # -----------------
     # 공통 상태
@@ -28,8 +28,11 @@ def main(page: ft.Page) -> None:
         if len(debug_logs) > 10:  # Keep only last 10 logs
             debug_logs.pop(0)
         debug_log.value = "\n".join(debug_logs)
-        if debug_log.page:
-            debug_log.update()
+        try:
+            if debug_log.page:
+                debug_log.update()
+        except Exception:
+            pass
     
     # Speech backend 초기화 (에러 처리 추가)
     try:
