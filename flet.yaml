@@ -10,3 +10,12 @@ permissions:
 app_name: TalkLand
 package_name: com.talkland.app
 version: 1.0.0
+
+# Dependencies (Android-compatible only)
+dependencies:
+  flet: ">=0.80.0"
+  numpy: ""
+  deep-translator: ""
+  edge-tts: ""
+  pygame: ""
+  SpeechRecognition: ""
