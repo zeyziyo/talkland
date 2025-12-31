@@ -19,8 +19,8 @@ class Mode2Section(ft.Column):
         self.timer_text = ft.Text("")
         self.result_text = ft.Text("")
 
-        self.start_btn = ft.Button("START", on_click=self.start_practice)
-        self.stop_btn = ft.Button("STOP") # currently unused in main.py logic but present in UI
+        self.start_btn = ft.ElevatedButton(content=ft.Text("START"), on_click=self.start_practice)
+        self.stop_btn = ft.ElevatedButton(content=ft.Text("STOP")) # currently unused in main.py logic but present in UI
 
         self.controls = [
             self.native_sentence,
