@@ -19,7 +19,8 @@ class AndroidSpeechBackend(SpeechBackend):
         try:
             import flet_audio_recorder
             self.audio_recorder = flet_audio_recorder.AudioRecorder(
-                on_state_changed=self._on_state_changed
+                # on_state_changed=self._on_state_changed # Deprecated check? Docs said on_state_change
+                on_state_changed=self._on_state_changed 
             )
             self.page.overlay.append(self.audio_recorder)
             self.page.update()
@@ -53,8 +54,17 @@ class AndroidSpeechBackend(SpeechBackend):
         if self.page.platform in ["android", "ios"]:
              # 모바일 환경에서는 경로 이슈가 있을 수 있으므로 주의
              pass
-
-        self.audio_recorder.start_recording(self.output_filename)
+        
+        try:
+            import flet_audio_recorder
+            config = flet_audio_recorder.AudioRecorderConfiguration(
+                encoder=flet_audio_recorder.AudioEncoder.WAV
+            )
+            self.audio_recorder.start_recording(self.output_filename, config=config)
+        except Exception as e:
+             print(f"[AndroidBackend] Start invalid config: {e}")
+             # Fallback
+             self.audio_recorder.start_recording(self.output_filename)
         self.is_recording = True
 
     def stop_stt(self) -> str:
