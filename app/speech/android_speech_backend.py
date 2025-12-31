@@ -19,7 +19,6 @@ class AndroidSpeechBackend(SpeechBackend):
         try:
             import flet_audio_recorder
             self.audio_recorder = flet_audio_recorder.AudioRecorder(
-                audio_encoder=flet_audio_recorder.AudioEncoder.WAV,
                 on_state_changed=self._on_state_changed
             )
             self.page.overlay.append(self.audio_recorder)
