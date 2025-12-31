@@ -2,6 +2,7 @@ import os
 import flet as ft
 import speech_recognition as sr
 from .speech_backend import SpeechBackend
+import tempfile
 
 class AndroidSpeechBackend(SpeechBackend):
     """
@@ -27,7 +28,7 @@ class AndroidSpeechBackend(SpeechBackend):
         # Flet AudioRecorder는 기본적으로 get_temporary_directory() 등을 사용할 것으로 추정되나,
         # 명시적 경로 없이 output_path를 지정하지 않으면 임시 파일로 저장되거나 에러가 날 수 있음.
         # 일단 단순 파일명으로 시도하고 문제 시 경로 수정.
-        self.output_filename = "voice_input.wav"
+        self.output_filename = os.path.join(tempfile.gettempdir(), "voice_input.wav")
         
         self.is_recording = False
         self.on_silence_callback = None # 안드로이드 파일 녹음 방식에서는 VAD(무음 감지) 구현이 어려움 (수동 종료 권장)
