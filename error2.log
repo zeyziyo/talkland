@@ -1,0 +1,43 @@
+Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<__run_socket_server.<locals>.on_session_created() done, defined at C:\Python3_13_2\Lib\site-packages\flet\app.py:231> exception=UnicodeEncodeError('cp949', 'Traceback (most recent call last):\r\n  File "C:\\PythonProjects\\talkland\\main.py", line 35, in main\r\n    add_log(f"Platform: {page.platform}")\r\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File "C:\\PythonProjects\\talkland\\main.py", line 31, in add_log\r\n    debug_log.update()\r\n    ~~~~~~~~~~~~~~~~^^\r\n  File "C:\\Python3_13_2\\Lib\\site-packages\\flet\\core\\control.py", line 326, in update\r\n    self.__page\r\nAssertionError: Text Control must be added to the page first\r\n\r\nDuring handling of the above exception, another exception occurred:\r\n\r\nTraceback (most recent call last):\r\n  File "C:\\Python3_13_2\\Lib\\site-packages\\flet\\app.py", line 247, in on_session_created\r\n    await asyncio.get_running_loop().run_in_executor(\r\n        executor, session_handler, page\r\n    )\r\n  File "C:\\Python3_13_2\\Lib\\concurrent\\futures\\thread.py", line 59, in run\r\n    result = self.fn(*self.args, **self.kwargs)\r\n  File "C:\\PythonProjects\\talkland\\main.py", line 40, in main\r\n    add_log(f"\u274c Init failed: {e}")\r\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File "C:\\PythonProjects\\talkland\\main.py", line 26, in add_log\r\n    print(message)  # Also print to console\r\n    ~~~~~^^^^^^^^^\r\nUnicodeEncodeError: \'cp949\' codec can\'t encode character \'\\u274c\' in position 0: illegal multibyte sequence\r\n', 967, 968, 'illegal multibyte sequence')>
+Traceback (most recent call last):
+  File "C:\PythonProjects\talkland\main.py", line 35, in main
+    add_log(f"Platform: {page.platform}")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PythonProjects\talkland\main.py", line 31, in add_log
+    debug_log.update()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\flet\core\control.py", line 326, in update
+    self.__page
+AssertionError: Text Control must be added to the page first
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python3_13_2\Lib\site-packages\flet\app.py", line 247, in on_session_created
+    await asyncio.get_running_loop().run_in_executor(
+        executor, session_handler, page
+    )
+  File "C:\Python3_13_2\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\PythonProjects\talkland\main.py", line 40, in main
+    add_log(f"\u274c Init failed: {e}")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PythonProjects\talkland\main.py", line 26, in add_log
+    print(message)  # Also print to console
+    ~~~~~^^^^^^^^^
+UnicodeEncodeError: 'cp949' codec can't encode character '\u274c' in position 0: illegal multibyte sequence
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python3_13_2\Lib\site-packages\flet\app.py", line 252, in on_session_created
+    print(
+    ~~~~~^
+        f"Unhandled error processing page session {page.session_id}:",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        traceback.format_exc(),
+        ^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+UnicodeEncodeError: 'cp949' codec can't encode character '\u274c' in position 967: illegal multibyte sequence

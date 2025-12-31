@@ -1,0 +1,6 @@
+[Translate] GoogleTranslator loaded successfully
+Traceback (most recent call last):
+  File "C:\PythonProjects\talkland\main.py", line 94, in <module>
+    ft.run(main)
+    ^^^^^^
+AttributeError: module 'flet' has no attribute 'run'

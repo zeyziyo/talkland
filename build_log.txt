@@ -1,0 +1,88 @@
+( ●    ) Initializing apk build...
+[08:27:23] Flutter 3.29.2
+Traceback (most recent call last):
+  File "C:\Python3_13_2\Lib\site-packages\flet_cli\commands\build.py", line 615, in handle
+    self.initialize_build()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\flet_cli\commands\build.py", line 679, in initialize_build
+    self.install_flutter()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\flet_cli\commands\build.py", line 774, in install_flutter
+    console.log(
+    ~~~~~~~~~~~^
+        f"Flutter {MINIMAL_FLUTTER_VERSION} installed {self.emojis['checkmark']}"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Python3_13_2\Lib\site-packages\rich\console.py", line 1965, in log
+    with self:
+         ^^^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\console.py", line 870, in __exit__
+    self._exit_buffer()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\console.py", line 826, in _exit_buffer
+    self._check_buffer()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\console.py", line 2038, in _check_buffer
+    self._write_buffer()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\console.py", line 2074, in _write_buffer
+    legacy_windows_render(buffer, LegacyWindowsTerm(self.file))
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\_windows_renderer.py", line 17, in legacy_windows_render
+    term.write_styled(text, style)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\_win32_console.py", line 441, in write_styled
+    self.write_text(text)
+    ~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\_win32_console.py", line 402, in write_text
+    self.write(text)
+    ~~~~~~~~~~^^^^^^
+UnicodeEncodeError: 'cp949' codec can't encode character '\u2705' in position 11: illegal multibyte sequence
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Python3_13_2\Scripts\flet.exe\__main__.py", line 6, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\flet\cli.py", line 11, in main
+    flet_cli.cli.main()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\flet_cli\cli.py", line 93, in main
+    args.handler(args)
+    ~~~~~~~~~~~~^^^^^^
+  File "C:\Python3_13_2\Lib\site-packages\flet_cli\commands\build.py", line 614, in handle
+    with Live(Group(self.status, self.progress), console=console) as self.live:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\live.py", line 189, in __exit__
+    self.stop()
+    ~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\live.py", line 162, in stop
+    with self.console:
+         ^^^^^^^^^^^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\console.py", line 870, in __exit__
+    self._exit_buffer()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\console.py", line 826, in _exit_buffer
+    self._check_buffer()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\console.py", line 2038, in _check_buffer
+    self._write_buffer()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\console.py", line 2074, in _write_buffer
+    legacy_windows_render(buffer, LegacyWindowsTerm(self.file))
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\_windows_renderer.py", line 17, in legacy_windows_render
+    term.write_styled(text, style)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\_win32_console.py", line 441, in write_styled
+    self.write_text(text)
+    ~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Python3_13_2\Lib\site-packages\rich\_win32_console.py", line 402, in write_text
+    self.write(text)
+    ~~~~~~~~~~^^^^^^
+UnicodeEncodeError: 'cp949' codec can't encode character '\u2705' in position 11: illegal multibyte sequence
+[08:27:23] Flutter 3.29.2

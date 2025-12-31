@@ -48,8 +48,12 @@ def create_speech_backend(page: Any) -> SpeechBackend:
         return WebSpeechBackend(page)
     
     # Android/iOS - use dummy backend
-    # Note: page.on_event and page.run_js don't work in Flet native mobile apps
-    if page.platform in ["android", "ios"]:
+    # Normalize platform string (page.platform is an Enum in Flet, e.g. PagePlatform.ANDROID)
+    platform_val = str(page.platform).lower() if page.platform else ""
+    # The Enum string might be "PagePlatform.ANDROID" or just "android" depending on version/context.
+    # Checking if it contains "android" or "ios" is safer.
+    
+    if "android" in platform_val or "ios" in platform_val:
         print(f"[Factory] Using DummySpeechBackend for {page.platform}")
         from .dummy_speech_backend import DummySpeechBackend
         return DummySpeechBackend()
