@@ -29,6 +29,7 @@ def main(page: ft.Page) -> None:
             debug_logs.pop(0)
         debug_log.value = "\n".join(debug_logs)
         try:
+            # Only update if the control is attached to a page
             if debug_log.page:
                 debug_log.update()
         except Exception:
@@ -39,9 +40,9 @@ def main(page: ft.Page) -> None:
         add_log(f"Platform: {page.platform}")
         add_log("Initializing speech backend...")
         speech_backend = create_speech_backend(page)
-        add_log(f"✅ Backend: {type(speech_backend).__name__}")
+        add_log(f"[OK] Backend: {type(speech_backend).__name__}")
     except Exception as e:
-        add_log(f"❌ Init failed: {e}")
+        add_log(f"[ERR] Init failed: {e}")
         import traceback
         error_details = traceback.format_exc()
         # Show first line of traceback
