@@ -16,12 +16,16 @@ class AndroidSpeechBackend(SpeechBackend):
     def __init__(self, page: ft.Page):
         self.page = page
         self.recognizer = sr.Recognizer()
-        self.audio_recorder = ft.AudioRecorder(
-            audio_encoder=ft.AudioEncoder.WAV,
-            on_state_changed=self._on_state_changed
-        )
-        self.page.overlay.append(self.audio_recorder)
-        self.page.update()
+        if hasattr(ft, "AudioRecorder"):
+            self.audio_recorder = ft.AudioRecorder(
+                audio_encoder=ft.AudioEncoder.WAV,
+                on_state_changed=self._on_state_changed
+            )
+            self.page.overlay.append(self.audio_recorder)
+            self.page.update()
+        else:
+            print("[AndroidBackend] Error: ft.AudioRecorder not found. Flet version too old?")
+            self.audio_recorder = None
         
         # 녹음 파일 경로 (캐시 디렉토리 등 사용 권장되지만, Flet은 기본적으로 앱 데이터 폴더 사용)
         # 안드로이드에서는 권한 문제로 경로 설정이 중요함. 
