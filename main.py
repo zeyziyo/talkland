@@ -96,4 +96,4 @@ def main(page: ft.Page) -> None:
         mode2_section,
     )
 
-ft.app(target=main)
+ft.run(main)

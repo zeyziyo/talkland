@@ -1,4 +1,5 @@
 flet>=0.80.0
 deep-translator
 SpeechRecognition
+flet-audio-recorder
 
