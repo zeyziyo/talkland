@@ -54,9 +54,9 @@ def create_speech_backend(page: Any) -> SpeechBackend:
     # Checking if it contains "android" or "ios" is safer.
     
     if "android" in platform_val or "ios" in platform_val:
-        print(f"[Factory] Using DummySpeechBackend for {page.platform}")
-        from .dummy_speech_backend import DummySpeechBackend
-        return DummySpeechBackend()
+        print(f"[Factory] Using AndroidSpeechBackend for {page.platform}")
+        from .android_speech_backend import AndroidSpeechBackend
+        return AndroidSpeechBackend(page)
 
     # Desktop - import only when needed to avoid loading sounddevice on mobile
     print("[Factory] Using DesktopSpeechBackend for desktop")
