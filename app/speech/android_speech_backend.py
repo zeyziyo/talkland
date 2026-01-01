@@ -16,16 +16,16 @@ class AndroidSpeechBackend(SpeechBackend):
     def __init__(self, page: ft.Page):
         self.page = page
         self.recognizer = sr.Recognizer()
+        # ft.AudioRecorder (Flet 0.24.0+)
         try:
-            import flet_audio_recorder
-            self.audio_recorder = flet_audio_recorder.AudioRecorder(
-                # on_state_changed=self._on_state_changed # Deprecated check? Docs said on_state_change
-                on_state_changed=self._on_state_changed 
+            self.audio_recorder = ft.AudioRecorder(
+                audio_encoder=ft.AudioEncoder.WAV
             )
+            self.audio_recorder.on_state_changed = self._on_state_changed
             self.page.overlay.append(self.audio_recorder)
             self.page.update()
-        except ImportError:
-            print("[AndroidBackend] Error: flet_audio_recorder not installed.")
+        except Exception as e:
+            print(f"[AndroidBackend] Error initializing AudioRecorder: {e}")
             self.audio_recorder = None
         
         # 녹음 파일 경로 (캐시 디렉토리 등 사용 권장되지만, Flet은 기본적으로 앱 데이터 폴더 사용)
@@ -56,15 +56,12 @@ class AndroidSpeechBackend(SpeechBackend):
              pass
         
         try:
-            import flet_audio_recorder
-            config = flet_audio_recorder.AudioRecorderConfiguration(
-                encoder=flet_audio_recorder.AudioEncoder.WAV
-            )
-            self.audio_recorder.start_recording(self.output_filename, config=config)
+            # ft.AudioRecorder.start_recording takes output_path
+            self.audio_recorder.start_recording(self.output_filename)
         except Exception as e:
              print(f"[AndroidBackend] Start invalid config: {e}")
-             # Fallback
-             self.audio_recorder.start_recording(self.output_filename)
+             # Fallback (though arguments are fixed now)
+             pass
         self.is_recording = True
 
     def stop_stt(self) -> str:
