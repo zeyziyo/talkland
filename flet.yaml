@@ -12,7 +12,8 @@ package_name: com.talkland.app
 version: 1.0.0
 
 # Dependencies (Android-compatible only)
-  flet: ">=0.26.0"
+  flet: ">=0.80.0"
   deep-translator: ""
   SpeechRecognition: ""
+  flet-audio-recorder: ">=0.80.0"
 

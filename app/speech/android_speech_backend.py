@@ -1,5 +1,6 @@
 import os
 import flet as ft
+import flet_audio_recorder as far
 import speech_recognition as sr
 from .speech_backend import SpeechBackend
 import tempfile
@@ -16,12 +17,14 @@ class AndroidSpeechBackend(SpeechBackend):
     def __init__(self, page: ft.Page):
         self.page = page
         self.recognizer = sr.Recognizer()
-        # ft.AudioRecorder (Flet 0.24.0+)
+        # flet-audio-recorder (Flet 0.80.0+)
         try:
-            self.audio_recorder = ft.AudioRecorder(
-                audio_encoder=ft.AudioEncoder.WAV
+            self.audio_recorder = far.AudioRecorder(
+                configuration=far.AudioRecorderConfiguration(
+                    encoder=far.AudioEncoder.WAV
+                ),
+                on_state_change=self._on_state_changed
             )
-            self.audio_recorder.on_state_changed = self._on_state_changed
             self.page.overlay.append(self.audio_recorder)
             self.page.update()
         except Exception as e:
@@ -63,7 +66,7 @@ class AndroidSpeechBackend(SpeechBackend):
              return
 
         try:
-            # ft.AudioRecorder.start_recording takes output_path
+            # far.AudioRecorder.start_recording takes output_path
             self.audio_recorder.start_recording(self.output_filename)
         except Exception as e:
              print(f"[AndroidBackend] Start invalid config: {e}")
