@@ -17,8 +17,27 @@ class AndroidSpeechBackend(SpeechBackend):
     def __init__(self, page: ft.Page):
         self.page = page
         self.recognizer = sr.Recognizer()
-        # flet-audio-recorder (Flet 0.80.0+)
+        
+        # Lazy initialization - AudioRecorder는 start_stt() 호출 시 초기화됨
+        self.audio_recorder = None
+        self.init_error = None
+        self._recorder_initialized = False
+        
+        # 녹음 파일 경로
+        self.output_filename = os.path.join(tempfile.gettempdir(), "voice_input.wav")
+        
+        self.is_recording = False
+        self.on_silence_callback = None
+
+    def _ensure_recorder_initialized(self):
+        """AudioRecorder 지연 초기화 - 필요할 때만 초기화"""
+        if self._recorder_initialized:
+            return self.audio_recorder is not None
+        
+        self._recorder_initialized = True
+        
         try:
+            print("[AndroidBackend] Initializing AudioRecorder...")
             self.audio_recorder = far.AudioRecorder(
                 configuration=far.AudioRecorderConfiguration(
                     encoder=far.AudioEncoder.WAV
@@ -27,22 +46,13 @@ class AndroidSpeechBackend(SpeechBackend):
             )
             self.page.overlay.append(self.audio_recorder)
             self.page.update()
+            print("[AndroidBackend] AudioRecorder initialized successfully")
+            return True
         except Exception as e:
             print(f"[AndroidBackend] Error initializing AudioRecorder: {e}")
             self.init_error = e
             self.audio_recorder = None
-        else:
-            self.init_error = None
-        
-        # 녹음 파일 경로 (캐시 디렉토리 등 사용 권장되지만, Flet은 기본적으로 앱 데이터 폴더 사용)
-        # 안드로이드에서는 권한 문제로 경로 설정이 중요함. 
-        # Flet AudioRecorder는 기본적으로 get_temporary_directory() 등을 사용할 것으로 추정되나,
-        # 명시적 경로 없이 output_path를 지정하지 않으면 임시 파일로 저장되거나 에러가 날 수 있음.
-        # 일단 단순 파일명으로 시도하고 문제 시 경로 수정.
-        self.output_filename = os.path.join(tempfile.gettempdir(), "voice_input.wav")
-        
-        self.is_recording = False
-        self.on_silence_callback = None # 안드로이드 파일 녹음 방식에서는 VAD(무음 감지) 구현이 어려움 (수동 종료 권장)
+            return False
 
     def _on_state_changed(self, e):
         print(f"AudioRecorder state changed: {e.data}")
@@ -56,14 +66,10 @@ class AndroidSpeechBackend(SpeechBackend):
         self.on_silence_callback = on_silence
         print("[AndroidBackend] Starting recording...")
         
-        # 녹음 시작 (WAV 포맷)
-        if self.page.platform in ["android", "ios"]:
-             # 모바일 환경에서는 경로 이슈가 있을 수 있으므로 주의
-             pass
-        
-        if self.audio_recorder is None:
-             print(f"[AndroidBackend] Cannot start: AudioRecorder not initialized. Error: {self.init_error}")
-             return
+        # Lazy initialization - 녹음 시작 시점에 AudioRecorder 초기화
+        if not self._ensure_recorder_initialized():
+            print(f"[AndroidBackend] Cannot start: AudioRecorder not initialized. Error: {self.init_error}")
+            return
 
         try:
             # far.AudioRecorder.start_recording takes output_path
