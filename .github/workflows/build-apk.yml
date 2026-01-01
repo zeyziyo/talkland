@@ -72,7 +72,7 @@ jobs:
       # APK 빌드
       - name: Flet Build APK
         run: |
-          yes | flet build apk --include-packages flet_audio_recorder --verbose
+          yes | flet build apk --verbose
 
       # APK 업로드
       - name: Upload APK Artifact
