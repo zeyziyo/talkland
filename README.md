@@ -11,6 +11,7 @@ Critical project constraints and architectural decisions are documented there.
 - **[Flet Android Guide](knowledge_base/flet_android_guide.md)**: Contains STRICT rules for Android deployment and Flet 0.80.0+ migration.
     - **CRITICAL**: We use Flet **0.80.0+**. `AudioRecorder` is NOT in `flet` core anymore. Use `flet-audio-recorder` package.
     - **CRITICAL**: Use `ft.app` for mobile entry point.
+    - **CRITICAL**: For ANY Flet-related code, you MUST verify against the [Official Flet Documentation](https://docs.flet.dev/). Do not rely on training data or assumptions.
 
 ### 🛠️ Tech Stack
 - **Framework**: Flet (>=0.80.0)
