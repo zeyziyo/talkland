@@ -26,7 +26,10 @@ class AndroidSpeechBackend(SpeechBackend):
             self.page.update()
         except Exception as e:
             print(f"[AndroidBackend] Error initializing AudioRecorder: {e}")
+            self.init_error = e
             self.audio_recorder = None
+        else:
+            self.init_error = None
         
         # 녹음 파일 경로 (캐시 디렉토리 등 사용 권장되지만, Flet은 기본적으로 앱 데이터 폴더 사용)
         # 안드로이드에서는 권한 문제로 경로 설정이 중요함. 
@@ -55,6 +58,10 @@ class AndroidSpeechBackend(SpeechBackend):
              # 모바일 환경에서는 경로 이슈가 있을 수 있으므로 주의
              pass
         
+        if self.audio_recorder is None:
+             print(f"[AndroidBackend] Cannot start: AudioRecorder not initialized. Error: {self.init_error}")
+             return
+
         try:
             # ft.AudioRecorder.start_recording takes output_path
             self.audio_recorder.start_recording(self.output_filename)
@@ -68,6 +75,9 @@ class AndroidSpeechBackend(SpeechBackend):
         """
         녹음 종료 및 변환 수행
         """
+        if self.audio_recorder is None:
+             return f"초기화 오류: {self.init_error}"
+
         if not self.is_recording:
             return ""
 
