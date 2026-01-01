@@ -11,5 +11,8 @@ dependencies = [
     "SpeechRecognition"
 ]
 
+[tool.setuptools.packages.find]
+include = ["app*"]
+
 [tool.flet]
 platforms = ["android"]
