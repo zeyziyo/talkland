@@ -8,7 +8,7 @@ As of late 2024 (Flet 0.80.0+):
 
 **Requirements:**
 ```txt
-flet>=0.80.0
+flet==0.80.0
 # Must install from git for 0.80.0 compatibility
 flet-audio-recorder @ git+https://github.com/flet-dev/flet-audio-recorder.git@main
 ```
