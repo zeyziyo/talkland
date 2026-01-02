@@ -122,5 +122,15 @@ def _ensure_recorder_initialized(self):
 flet build apk --verbose
 
 # 더 이상 지원되지 않음 ❌
+
 # flet build apk --include-packages flet_audio_recorder
 ```
+
+## 7. Mandatory Build Status Check
+Whenever you modify the application or build settings, you **MUST** refer to `knowledge_base/build_config_reference.md`.
+This file contains the "Gold Standard" configuration that is known to work. Always verify your:
+1. `pyproject.toml`
+2. `requirements.txt`
+3. `.github/workflows/build-apk.yml`
+
+against the reference document to prevent regression.
