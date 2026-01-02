@@ -17,7 +17,12 @@ python -c "import app; print('✅ App module OK')"
 
 ## 3. Android APK 빌드
 ```bash
-flet build apk --verbose --permissions microphone --include-packages flet_audio_recorder
+flet build apk --verbose
+```
+
+Dependencies and permissions are now configured in `pyproject.toml`.
+- Flutter dependencies: `[tool.flet.flutter.dependencies]`
+- Permissions: `[tool.flet.android]`
 ```
 
 ## 4. 빌드 결과 확인
