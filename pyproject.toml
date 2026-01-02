@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "flet==0.80.0",
-    "flet-audio-recorder @ git+https://github.com/flet-dev/flet-audio-recorder.git@main",
+    "flet-audio-recorder",
     "deep-translator",
     "SpeechRecognition"
 ]
@@ -21,7 +21,6 @@ platforms = ["android"]
 [tool.flet.android]
 permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
 
-[tool.flet.flutter.dependencies]
-flet_audio_recorder = { git = { url = "https://github.com/flet-dev/flet-audio-recorder.git", ref = "main" } }
+
 
 
