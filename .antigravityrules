@@ -9,3 +9,4 @@
 7. MVVM 패턴 유지
 8. Android 빌드는 GitHub Actions 기준
 9. 수정 전 반드시 요약 설명
+10. 수정 작업 후 중요 사항은 반드시 knowledge_base/flet_android_guide.md 업데이트

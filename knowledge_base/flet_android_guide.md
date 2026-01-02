@@ -53,13 +53,14 @@ self.audio_recorder = far.AudioRecorder(
 self.audio_recorder.start_recording(self.output_filename)
 ```
 
-## 4. pyproject.toml Configuration (CRITICAL)
+## 4. pyproject.toml Configuration (CRITICAL - Flet 0.80.0+)
 
 Flet 0.80.0에서는 `flet.yaml` 대신 `pyproject.toml`을 사용하여 설정합니다.
+특히 `flet_audio_recorder`는 Pub.dev 버전(`0.25.2`)이 Flet 0.80.0과 호환되지 않으므로, **GitHub 저장소에서 직접 가져와야 합니다**.
 
 ```toml
 [project]
-name = "your-app"
+name = "talkland"
 version = "0.1.0"
 dependencies = [
     "flet>=0.80.0",
@@ -67,7 +68,6 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-# 앱 패키지만 포함, knowledge_base 등 제외
 include = ["app*"]
 
 [tool.flet]
@@ -76,17 +76,22 @@ platforms = ["android"]
 [tool.flet.android]
 permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
 
-# Flutter 의존성 (CRITICAL - 이것이 없으면 "Unknown control" 오류 발생)
+# Flutter 의존성 (CRITICAL)
+# Pub.dev 버전은 구버전이므로 GitHub 메인 저장소의 패키지를 사용해야 함
 [tool.flet.flutter.dependencies]
-flet_audio_recorder = ""
+flet_audio_recorder = { git = { url = "https://github.com/flet-dev/flet.git", path = "packages/flet_audio_recorder" } }
 ```
 
 ## 5. Troubleshooting
 
+### Gradle Build Error (403 Forbidden)
+GitHub Actions의 `ubuntu-latest` (v24.04) 러너에서 Maven Central 접근 시 403 오류가 발생할 수 있습니다.
+**해결책**: `runs-on: ubuntu-22.04`로 변경하여 빌드 환경을 고정하세요.
+
 | 오류 메시지 | 원인 및 해결책 |
 |------------|---------------|
-| **"Unknown control AudioRecorder"** | `[tool.flet.flutter.dependencies]`에 `flet_audio_recorder` 누락 |
-| **'NoneType' object has no attribute 'stop_recording'** | 초기화 실패. `try-except`로 감싸고 권한 실패 처리 |
+| **"Unknown control AudioRecorder"** | Flutter 플러그인 미등록. 위 `pyproject.toml`의 Git dependency 설정 필수. |
+| **"Could not GET ... 403 Forbidden"** | GitHub Actions Runner 네트워크 문제. `ubuntu-22.04` 사용 권장. |
 | **setuptools "Multiple top-level packages"** | `[tool.setuptools.packages.find]`에 `include = ["app*"]` 추가 |
 
 ### Lazy Initialization 권장
