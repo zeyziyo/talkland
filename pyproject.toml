@@ -14,9 +14,12 @@ dependencies = [
 [tool.setuptools.packages.find]
 include = ["app*"]
 
+
 [tool.flet]
 platforms = ["android"]
-flutter.dependencies = ["flet_audio_recorder"]
 
 [tool.flet.android]
 permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
+
+[tool.flet.flutter.dependencies]
+flet_audio_recorder = "0.25.2"

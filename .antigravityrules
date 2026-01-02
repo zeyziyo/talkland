@@ -1,0 +1,11 @@
+# .antigravityrules
+
+1. 모든 설명은 한국어
+2. Python 3.13.2 사용
+3. Flet 최신 안정 버전 사용
+4. Flet 관련 코드는 반드시 flet 공식 문서를 참고
+5. UI 로직과 비즈니스 로직 분리
+6. Android 공식 가이드 우선
+7. MVVM 패턴 유지
+8. Android 빌드는 GitHub Actions 기준
+9. 수정 전 반드시 요약 설명
