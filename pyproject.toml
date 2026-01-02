@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "TalkLand - Language Learning App"
 readme = "README.md"
 requires-python = ">=3.12"
+dependencies = [
     "flet>=0.80.0",
     "flet-audio-recorder @ git+https://github.com/flet-dev/flet-audio-recorder.git@main",
     "deep-translator",
