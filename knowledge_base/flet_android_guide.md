@@ -79,7 +79,9 @@ permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
 # Flutter 의존성 (CRITICAL)
 # Pub.dev 버전은 구버전이므로 GitHub 메인 저장소의 패키지를 사용해야 함
 [tool.flet.flutter.dependencies]
-flet_audio_recorder = { git = { url = "https://github.com/flet-dev/flet.git", path = "packages/flet_audio_recorder" } }
+# CRITICAL: Must use 'git' source AND specify 'ref' tag matching python package version.
+# Do NOT use 'main' branch to avoid version mismatch errors.
+flet_audio_recorder = { git = { url = "https://github.com/flet-dev/flet-audio-recorder.git", ref = "main" } }
 ```
 
 ## 5. Troubleshooting
