@@ -72,7 +72,7 @@ jobs:
       # APK 빌드
       - name: Flet Build APK
         run: |
-          flet build apk --verbose
+          flet build apk --verbose --template-ref 0.80.0
 
       # APK 업로드
       - name: Upload APK Artifact
