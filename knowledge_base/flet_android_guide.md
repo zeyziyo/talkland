@@ -1,12 +1,12 @@
 # Flet Android Deployment Guide
 
-## 1. Version Compatibility (STABLE)
-We are using **Flet 0.25.2 (Stable)** to ensure Android compatibility and proven stability.
+## 1. Version Compatibility (Flet 0.80.1 + Flutter Injection)
+We are using **Flet 0.80.1** with **Flutter Dependency Injection**.
 
 **Requirements:**
 ```txt
-flet==0.25.2
-# AudioRecorder is built-in (flet core), no extra package needed.
+flet==0.80.1
+flet-audio-recorder>=0.80.0
 ```
 
 ## 2. Entry Point
@@ -24,16 +24,20 @@ ft.app(target=main)
 ```
 
 ## 3. Audio Recorder Implementation
-In Flet 0.25.2, `AudioRecorder` is part of the `flet` core package.
+Flet 0.80.x requires the external `flet-audio-recorder` package.
+
+### Correct Import
+```python
+import flet_audio_recorder as far
+```
 
 ### Initialization
 ```python
-import flet as ft
-
-# Direct initialization (Classic API)
-self.audio_recorder = ft.AudioRecorder(
-    audio_encoder=ft.AudioEncoder.WAV,
-    on_state_changed=self._on_state_changed
+self.audio_recorder = far.AudioRecorder(
+    configuration=far.AudioRecorderConfiguration(
+        encoder=far.AudioEncoder.WAV
+    ),
+    on_state_change=self._on_state_changed
 )
 ```
 
@@ -43,27 +47,20 @@ self.audio_recorder = ft.AudioRecorder(
 self.audio_recorder.start_recording(self.output_filename)
 ```
 
-## 4. pyproject.toml Configuration
+## 4. pyproject.toml Configuration (CRITICAL)
 
-Use `flet==0.25.2` and avoid external `flet-audio-recorder` dependencies.
+To fix "Unknown control audiorecorder" error, you **MUST** inject the Flutter dependency.
 
 ```toml
 [project]
-name = "talkland"
-version = "0.1.0"
 dependencies = [
-    "flet==0.25.2",
-    # "flet-audio-recorder",  <-- REMOVE THIS
+    "flet==0.80.1",
+    "flet-audio-recorder>=0.80.0",
 ]
 
-[tool.setuptools.packages.find]
-include = ["app*"]
-
-[tool.flet]
-platforms = ["android"]
-
-[tool.flet.android]
-permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
+[tool.flet.flutter.dependencies]
+# THIS IS THE KEY FIX:
+flet_audio_recorder = "^0.80.0" 
 ```
 
 ## 5. Troubleshooting

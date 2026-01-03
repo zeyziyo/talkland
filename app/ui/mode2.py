@@ -27,8 +27,8 @@ class Mode2Section(ft.Column):
             ft.Container(
                 content=self.slot_text,
                 height=80,
-                alignment=ft.alignment.center,
-                border=ft.border.all(2),
+                alignment=ft.Alignment(0, 0),
+                border=ft.Border.all(2),
                 expand=True,
             ),
             self.timer_text,

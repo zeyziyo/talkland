@@ -1,6 +1,6 @@
 import os
 import flet as ft
-# import flet_audio_recorder as far  <-- Removed
+import flet_audio_recorder as far
 import speech_recognition as sr
 from .speech_backend import SpeechBackend
 import tempfile
@@ -29,15 +29,16 @@ class AndroidSpeechBackend(SpeechBackend):
         self._recorder_initialized = True
         
         try:
-            print("[AndroidBackend] Initializing ft.AudioRecorder (Core)...")
-            # Flet 0.25.2 API: No Configuration object, direct params
-            self.audio_recorder = ft.AudioRecorder(
-                audio_encoder=ft.AudioEncoder.WAV,
-                on_state_changed=self._on_state_changed
+            print("[AndroidBackend] Initializing flet_audio_recorder (External)...")
+            self.audio_recorder = far.AudioRecorder(
+                configuration=far.AudioRecorderConfiguration(
+                    encoder=far.AudioEncoder.WAV
+                ),
+                on_state_change=self._on_state_changed
             )
-
             self.page.overlay.append(self.audio_recorder)
             self.page.update()
+
             print("[AndroidBackend] AudioRecorder initialized successfully")
             return True
         except Exception as e:

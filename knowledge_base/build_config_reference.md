@@ -104,7 +104,8 @@ jobs:
 Contains package requirements for the Android environment.
 
 ```text
-flet==0.25.2
+flet==0.80.1
+flet-audio-recorder>=0.80.0
 deep-translator
 SpeechRecognition
 ```
@@ -120,7 +121,8 @@ description = "TalkLand - Language Learning App"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "flet==0.25.2",
+    "flet==0.80.1",
+    "flet-audio-recorder>=0.80.0",
     "deep-translator",
     "SpeechRecognition"
 ]
@@ -134,5 +136,8 @@ platforms = ["android"]
 
 [tool.flet.android]
 permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
+
+[tool.flet.flutter.dependencies]
+flet_audio_recorder = "^0.80.0"
 ```
 
