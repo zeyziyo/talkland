@@ -5,7 +5,7 @@ description = "TalkLand - Language Learning App"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "flet==0.80.0",
+    "flet==0.25.2",
     "flet-audio-recorder",
     "deep-translator",
     "SpeechRecognition"
