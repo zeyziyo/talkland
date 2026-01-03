@@ -13,3 +13,7 @@
 # Verification Protocol (Physical Constraint)
 - **Evidence-Based Reporting**: 절대 증거 없이 "확인했다"고 말하지 않는다. 반드시 `grep`이나 파일 내용을 출력하여 로그에 남긴다.
 - **Legacy API Trap**: Flet 0.80+ 프로젝트에서는 문서 커밋 전 `ft.alignment.center`, `ft.border.all` (소문자)가 없는지 검사한다.
+
+# Prediction Protocol (Physical Constraint)
+- **Pre-Mortem Analysis**: 작업을 실행하기 전, "무엇이 잘못될 수 있는가?"(예: 대화형 프롬프트, 버전 불일치, 권한 문제)를 반드시 먼저 나열하고 방어 로직을 짠다.
+- **Headless Assumption**: CI/CD나 서버 환경은 '키보드가 없다'고 가정한다. `y/n` 질문이 나올 상황을 원천 차단한다.
