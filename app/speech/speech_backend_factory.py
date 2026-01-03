@@ -40,26 +40,69 @@ def create_speech_backend(page: Any) -> SpeechBackend:
     - SpeechBackend 구현체
     """
     
-    print(f"[Factory] Creating backend for platform: {page.platform}, sys.platform: {sys.platform}")
+    # 1. Platform Detection
+    platform_info = "UNKNOWN"
+    try:
+        if page and hasattr(page, 'platform'):
+            platform_info = str(page.platform)
+    except:
+        pass
+        
+    print(f"[Factory] Creating backend. Page Platform: {platform_info}, Sys Platform: {sys.platform}")
 
-    # Web (Pyodide only) - uses JavaScript Web Speech API
+    # 2. Prepare Dummy Backend (Safe Fallback)
+    try:
+        from .dummy_speech_backend import DummySpeechBackend
+    except ImportError:
+        # Should not happen, but as a last resort define inline or fail
+        print("[Factory] CRITICAL: Could not import DummySpeechBackend")
+        class DummySpeechBackend(SpeechBackend): # Inline fallback
+            def start_stt(self, *args, **kwargs): pass
+            def stop_stt(self) -> str: return "Critical Error: Dummy Backend Missing"
+            def speak(self, *args, **kwargs): pass
+
+    # 3. Web / Pyodide
     if is_web_runtime():
-        print("[Factory] Using WebSpeechBackend for web platform")
-        return WebSpeechBackend(page)
-    
-    # Android/iOS - use dummy backend
-    # Normalize platform string (page.platform is an Enum in Flet, e.g. PagePlatform.ANDROID)
-    platform_val = str(page.platform).lower() if page.platform else ""
-    # The Enum string might be "PagePlatform.ANDROID" or just "android" depending on version/context.
-    # Checking if it contains "android" or "ios" is safer.
-    
-    if "android" in platform_val or "ios" in platform_val:
-        print(f"[Factory] Using AndroidSpeechBackend for {page.platform}")
-        from .android_speech_backend import AndroidSpeechBackend
-        return AndroidSpeechBackend(page)
+        print("[Factory] Environment: Web/Pyodide")
+        try:
+            from .web_speech_backend import WebSpeechBackend
+            return WebSpeechBackend(page)
+        except Exception as e:
+            print(f"[Factory] Failed to load WebSpeechBackend: {e}")
+            return DummySpeechBackend()
 
-    # Desktop - import only when needed to avoid loading sounddevice on mobile
-    print("[Factory] Using DesktopSpeechBackend for desktop")
-    from .desktop_speech_backend import DesktopSpeechBackend
-    return DesktopSpeechBackend()
+    # 4. Android / iOS (Mobile)
+    # Check "android" or "ios" in the platform string case-insensitively
+    is_mobile = False
+    if platform_info:
+        p = platform_info.lower()
+        if "android" in p or "ios" in p:
+            is_mobile = True
+    
+    if is_mobile:
+        print(f"[Factory] Environment: Mobile ({platform_info})")
+        try:
+            # Try to import Android backend
+            # This might fail if dependencies (like sounddevice if wrongly imported) are missing
+            print("[Factory] Attempting to import AndroidSpeechBackend...")
+            from .android_speech_backend import AndroidSpeechBackend
+            return AndroidSpeechBackend(page)
+        except Exception as e:
+            print(f"[Factory] Failed to load AndroidSpeechBackend: {e}")
+            import traceback
+            traceback.print_exc()
+            print("[Factory] Fallback to DummySpeechBackend")
+            return DummySpeechBackend()
+
+    # 5. Desktop (Windows/Mac/Linux)
+    print("[Factory] Environment: Desktop")
+    try:
+        print("[Factory] Attempting to import DesktopSpeechBackend...")
+        from .desktop_speech_backend import DesktopSpeechBackend
+        return DesktopSpeechBackend()
+    except Exception as e:
+        print(f"[Factory] Failed to load DesktopSpeechBackend: {e}")
+        import traceback
+        traceback.print_exc()
+        return DummySpeechBackend()
 
