@@ -71,7 +71,7 @@ GitHub Actions의 `ubuntu-latest` (v24.04) 러너에서 Maven Central 접근 시
 
 | 오류 메시지 | 원인 및 해결책 |
 |------------|---------------|
-| **"Unknown control AudioRecorder"** | Flutter 플러그인 미등록. 위 `pyproject.toml`의 Git dependency 설정 필수. |
+| **"Unknown control AudioRecorder"** | Flutter 플러그인 미등록. `[tool.flet.flutter.dependencies]` 설정 필수. |
 | **"Could not GET ... 403 Forbidden"** | GitHub Actions Runner 네트워크 문제. `ubuntu-22.04` 사용 권장. |
 | **setuptools "Multiple top-level packages"** | `[tool.setuptools.packages.find]`에 `include = ["app*"]` 추가 |
 
@@ -116,21 +116,19 @@ This file contains the "Gold Standard" configuration that is known to work. Alwa
 
 against the reference document to prevent regression.
 
-## 8. Android Runtime API Sensitivity (IMPORTANT)
-The Android Flet runtime is stricter than Desktop. You **MUST** use the lowercase module paths for factory methods and instances, not the capitalized class names.
+## 8. Android Runtime API Sensitivity (Flet 0.80.1+)
+In Flet 0.80.1, we must use the class-based constructors, not the old lowercase module helpers.
 
-**Incorrect (Causes runtime crash on Android):**
+**Incorrect (Deprecated/Removed in 0.80+):**
 ```python
-ft.Alignment.CENTER
-ft.Border.all(2)
-ft.Radius.all(10)
+ft.alignment.center
+ft.border.all(2)
 ```
 
 **Correct:**
 ```python
-ft.alignment.center
-ft.border.all(2)
-ft.radius.all(10)
+ft.Alignment(0, 0)
+ft.Border.all(2)
 ```
 
-Always use lowercase `ft.border`, `ft.colors`, `ft.alignment` etc. when accessing helper functions or constants.
+Always use capitalized classes `ft.Border`, `ft.Alignment` etc.
