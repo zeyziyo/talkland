@@ -1,16 +1,12 @@
 # Flet Android Deployment Guide
 
-## 1. Version Compatibility (CRITICAL)
-As of late 2024 (Flet 0.80.0+):
-- **Core Library**: `flet` package no longer contains everything.
-- **Audio Recording**: `AudioRecorder` control was moved from `flet` core to **`flet-audio-recorder`** package.
-- **Documentation**: Always check [PyPI](https://pypi.org/project/flet/) for the real latest version. Do not trust local old versions.
+## 1. Version Compatibility (STABLE)
+We are using **Flet 0.25.2 (Stable)** to ensure Android compatibility and proven stability.
 
 **Requirements:**
 ```txt
-flet==0.80.0
-# Must install from git for 0.80.0 compatibility
-flet-audio-recorder @ git+https://github.com/flet-dev/flet-audio-recorder.git@main
+flet==0.25.2
+# AudioRecorder is built-in (flet core), no extra package needed.
 ```
 
 ## 2. Entry Point
@@ -28,44 +24,36 @@ ft.app(target=main)
 ```
 
 ## 3. Audio Recorder Implementation
-Since Flet 0.80.0, usage has changed significantly.
-
-### Correct Import
-```python
-import flet_audio_recorder as far
-# NOT: from flet import AudioRecorder (Deprecated/Removed)
-```
+In Flet 0.25.2, `AudioRecorder` is part of the `flet` core package.
 
 ### Initialization
-Note `on_state_change` (no 'd') and strict `configuration` object.
-
 ```python
-self.audio_recorder = far.AudioRecorder(
-    configuration=far.AudioRecorderConfiguration(
-        encoder=far.AudioEncoder.WAV
-    ),
-    on_state_change=self._on_state_changed
+import flet as ft
+
+# Direct initialization (Classic API)
+self.audio_recorder = ft.AudioRecorder(
+    audio_encoder=ft.AudioEncoder.WAV,
+    on_state_changed=self._on_state_changed
 )
 ```
 
 ### Starting Recording
 ```python
-# Must provide output path
+# Provide output path
 self.audio_recorder.start_recording(self.output_filename)
 ```
 
-## 4. pyproject.toml Configuration (CRITICAL - Flet 0.80.0+)
+## 4. pyproject.toml Configuration
 
-Flet 0.80.0에서는 `flet.yaml` 대신 `pyproject.toml`을 사용하여 설정합니다.
-특히 `flet_audio_recorder`는 Pub.dev 버전(`0.25.2`)이 Flet 0.80.0과 호환되지 않으므로, **GitHub 저장소에서 직접 가져와야 합니다**.
+Use `flet==0.25.2` and avoid external `flet-audio-recorder` dependencies.
 
 ```toml
 [project]
 name = "talkland"
 version = "0.1.0"
 dependencies = [
-    "flet>=0.80.0",
-    "flet-audio-recorder>=0.80.0",
+    "flet==0.25.2",
+    # "flet-audio-recorder",  <-- REMOVE THIS
 ]
 
 [tool.setuptools.packages.find]
@@ -76,13 +64,6 @@ platforms = ["android"]
 
 [tool.flet.android]
 permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
-
-# Flutter 의존성 (CRITICAL)
-# Pub.dev 버전은 구버전이므로 GitHub 메인 저장소의 패키지를 사용해야 함
-[tool.flet.flutter.dependencies]
-# CRITICAL: Must use 'git' source AND specify 'ref' tag matching python package version.
-# Do NOT use 'main' branch to avoid version mismatch errors.
-flet_audio_recorder = { git = { url = "https://github.com/flet-dev/flet-audio-recorder.git", ref = "main" } }
 ```
 
 ## 5. Troubleshooting
@@ -137,3 +118,22 @@ This file contains the "Gold Standard" configuration that is known to work. Alwa
 3. `.github/workflows/build-apk.yml`
 
 against the reference document to prevent regression.
+
+## 8. Android Runtime API Sensitivity (IMPORTANT)
+The Android Flet runtime is stricter than Desktop. You **MUST** use the lowercase module paths for factory methods and instances, not the capitalized class names.
+
+**Incorrect (Causes runtime crash on Android):**
+```python
+ft.Alignment.CENTER
+ft.Border.all(2)
+ft.Radius.all(10)
+```
+
+**Correct:**
+```python
+ft.alignment.center
+ft.border.all(2)
+ft.radius.all(10)
+```
+
+Always use lowercase `ft.border`, `ft.colors`, `ft.alignment` etc. when accessing helper functions or constants.

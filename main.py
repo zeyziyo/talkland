@@ -82,7 +82,7 @@ def main(page: ft.Page) -> None:
         # -----------------
         # MODE 전환 로직
         # -----------------
-        def on_mode_change(e: ft.Event) -> None:
+        def on_mode_change(e: ft.ControlEvent) -> None:
             nonlocal mode
             mode = next(iter(mode_selector.selected))
     

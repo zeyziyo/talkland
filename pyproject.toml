@@ -6,7 +6,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "flet==0.25.2",
-    "flet-audio-recorder",
     "deep-translator",
     "SpeechRecognition"
 ]

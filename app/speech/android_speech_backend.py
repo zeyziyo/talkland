@@ -1,6 +1,6 @@
 import os
 import flet as ft
-import flet_audio_recorder as far
+# import flet_audio_recorder as far  <-- Removed
 import speech_recognition as sr
 from .speech_backend import SpeechBackend
 import tempfile
@@ -8,42 +8,34 @@ import tempfile
 class AndroidSpeechBackend(SpeechBackend):
     """
     Android Native App용 음성 인식 백엔드
-    
-    작동 원리:
-    1. Flet의 AudioRecorder를 사용하여 마이크 입력을 WAV 파일로 녹음
-    2. 녹음이 끝나면 저장된 파일을 speech_recognition 라이브러리로 읽어들임
-    3. Google Speech API로 전송하여 텍스트 변환
     """
     def __init__(self, page: ft.Page):
         self.page = page
         self.recognizer = sr.Recognizer()
         
-        # Lazy initialization - AudioRecorder는 start_stt() 호출 시 초기화됨
+        # Lazy initialization
         self.audio_recorder = None
         self.init_error = None
         self._recorder_initialized = False
         
-        # 녹음 파일 경로
         self.output_filename = os.path.join(tempfile.gettempdir(), "voice_input.wav")
-        
         self.is_recording = False
         self.on_silence_callback = None
 
     def _ensure_recorder_initialized(self):
-        """AudioRecorder 지연 초기화 - 필요할 때만 초기화"""
         if self._recorder_initialized:
             return self.audio_recorder is not None
         
         self._recorder_initialized = True
         
         try:
-            print("[AndroidBackend] Initializing AudioRecorder...")
-            self.audio_recorder = far.AudioRecorder(
-                configuration=far.AudioRecorderConfiguration(
-                    encoder=far.AudioEncoder.WAV
-                ),
-                on_state_change=self._on_state_changed
+            print("[AndroidBackend] Initializing ft.AudioRecorder (Core)...")
+            # Flet 0.25.2 API: No Configuration object, direct params
+            self.audio_recorder = ft.AudioRecorder(
+                audio_encoder=ft.AudioEncoder.WAV,
+                on_state_changed=self._on_state_changed
             )
+
             self.page.overlay.append(self.audio_recorder)
             self.page.update()
             print("[AndroidBackend] AudioRecorder initialized successfully")
