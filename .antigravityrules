@@ -17,3 +17,7 @@
 # Prediction Protocol (Physical Constraint)
 - **Pre-Mortem Analysis**: 작업을 실행하기 전, "무엇이 잘못될 수 있는가?"(예: 대화형 프롬프트, 버전 불일치, 권한 문제)를 반드시 먼저 나열하고 방어 로직을 짠다.
 - **Headless Assumption**: CI/CD나 서버 환경은 '키보드가 없다'고 가정한다. `y/n` 질문이 나올 상황을 원천 차단한다.
+
+# Manual Adherence Protocol (Physical Constraint)
+- **Citation Required**: 주요 아키텍처나 의존성 변경 시, 반드시 공식 문서의 URL과 해당 섹션을 주석이나 계획서에 명시한다. "그냥" 변경은 불가능하다.
+- **Zero Assumption**: "보통 이렇겠지"라는 가정 금지. 문서에 명시되지 않은 동작은 없는 것으로 간주한다.

@@ -121,4 +121,7 @@ def main(page: ft.Page) -> None:
         )
         page.update()
 
+# Flet 0.80.1 Entry Point
+# Mobile/Web: ft.app is required.
+# To run as Web: flet run main.py --web
 ft.app(target=main)
