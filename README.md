@@ -14,8 +14,9 @@ Critical project constraints and architectural decisions are documented there.
     - **CRITICAL**: For ANY Flet-related code, you MUST verify against the [Official Flet Documentation](https://docs.flet.dev/). Do not rely on training data or assumptions.
 
 ### 🛠️ Tech Stack
-- **Framework**: Flet (>=0.80.0)
+- **Framework**: Flet 0.80.1 (Strict)
 - **Audio**: `flet-audio-recorder` (>=0.80.0)
+- **Config**: `pyproject.toml` with `[tool.flet.flutter.dependencies]` (CRITICAL)
 - **Speech-to-Text**: Google Speech Recognition
 - **Translator**: `deep-translator`
 

@@ -1,4 +1,6 @@
-# Flet 0.80.0 & Android Build Research Report (Flet 0.80.0 및 안드로이드 빌드 연구 보고서)
+# [ARCHIVED] Flet 0.80.0 & Android Build Research Report
+> **⚠️ NOTE**: This document is historical. For the latest build rules and Flet 0.80.1 configuration, please refer to **[Flet Android Guide](flet_android_guide.md)**.
+
 
 ## 1. Overview: The 0.80.0 Paradigm Shift (개요: 0.80.0의 패러다임 전환)
 Based on the documentation ([Creating a new Flet app](https://docs.flet.dev/getting-started/create-flet-app/)), Flet 0.80.0 (codenamed "Flet 1.0 Beta") represents a fundamental architectural change.
