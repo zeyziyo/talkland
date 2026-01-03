@@ -27,7 +27,7 @@ class Mode2Section(ft.Column):
             ft.Container(
                 content=self.slot_text,
                 height=80,
-                alignment=ft.Alignment.CENTER,
+                alignment=ft.alignment.center,
                 border=ft.Border.all(2),
                 expand=True,
             ),
