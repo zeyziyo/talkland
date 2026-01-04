@@ -17,9 +17,10 @@ class DummySpeechBackend(SpeechBackend):
     Android 네이티브 앱에서 사용
     """
 
-    def __init__(self):
+    def __init__(self, init_error=None):
         """초기화"""
-        print("[DummySpeechBackend] Initialized (no speech features)")
+        self.init_error = init_error
+        print(f"[DummySpeechBackend] Initialized (no speech features). Error: {init_error}")
 
     # =========================
     # STT
@@ -43,4 +44,3 @@ class DummySpeechBackend(SpeechBackend):
     def speak(self, text: str, slow: bool = False) -> None:
         """텍스트를 음성으로 출력 (더미 - 아무것도 하지 않음)"""
         print(f"Dummy speak: {text}")
-```
