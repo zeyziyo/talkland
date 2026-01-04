@@ -47,8 +47,7 @@ jobs:
 
       - name: Build APK
         run: |
-          # --include-packages is the Key Fix
-          flet build apk --verbose --include-packages flet_audio_recorder
+          flet build apk --verbose
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
