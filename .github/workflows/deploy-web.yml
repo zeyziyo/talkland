@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install flet==0.80.1
-          pip install -r requirements.txt
+          pip install --pre -r requirements.txt
 
       - name: Flet Publish
         run: |
