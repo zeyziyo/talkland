@@ -81,10 +81,10 @@ def create_speech_backend(page: Any) -> SpeechBackend:
     # 4. Return Backend
     try:
         if is_web:
-            # Plan C: Use AndroidSpeechBackend for Web (It handles Blob URLs)
-            print("[Factory] Using AndroidSpeechBackend for Web (PWA Mode)")
-            from .android_speech_backend import AndroidSpeechBackend
-            return AndroidSpeechBackend(page)
+            # Plan D: Use Native JS Bridge
+            print("[Factory] Using WebJsSpeechBackend for Web (PWA Mode)")
+            from .web_js_backend import WebJsSpeechBackend
+            return WebJsSpeechBackend(page)
             
         elif platform_info and ("android" in platform_info.lower() or "ios" in platform_info.lower()):
             # Mobile

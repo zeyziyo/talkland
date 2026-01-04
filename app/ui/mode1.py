@@ -188,7 +188,6 @@ class Mode1Section(ft.Column):
         
         # self.mode1_start_btn.content = ft.Text("변환 중...") # N/A for IconButton
         self.mode1_start_btn.disabled = True
-        # self.mode1_start_btn.style = None
         
         self._page.update()
         
@@ -197,23 +196,55 @@ class Mode1Section(ft.Column):
                  self.mode1_result.value = "음성 인식 기능을 사용할 수 없습니다."
              else:
                  text = self.speech_backend.stop_stt()
+                 if text == "WAITING_FOR_JS":
+                     print("Waiting for JS callback...")
+                     # Do not reset UI yet, wait for callback
+                     return
+                 
                  print(f"Transcribed text: {text}")
                  
-                 if text:
-                     self.mode1_result.value = text
-                 else:
-                     self.mode1_result.hint_text = "음성을 인식하지 못했습니다. 다시 시도해주세요."
-                     # self.mode1_result.value = "음성을 인식하지 못했습니다. 다시 시도해주세요."
+                 self._handle_result(text)
+                 
         except Exception as ex:
              print(f"STT Error: {ex}")
-             self.mode1_result.value = f"변환 오류: {ex}"
+             self._handle_result(None, error=str(ex))
+    
+    def on_audio_data(self, audio_bytes):
+        """Callback for Async Backend (Web JS)"""
+        print(f"Async Audio Data Received: {len(audio_bytes)} bytes")
+        # Here we need to transcribe the bytes using SpeechRecognition or API
+        # Since SpeechBackend interface usually handles transcription inside stop_stt,
+        # but here we got raw bytes.
+        # We need a helper method in Backend to transcribe bytes?
+        # OR we do it here if we have dependencies.
+        # Ideally, backend should have `transcribe_bytes(bytes)`.
+        # For now, let's assume the backend has a helper or we import speech_recognition here.
         
+        try:
+            # We assume backend has a method for this, or we do it quickly here
+            # But Mode1 shouldn't depend on SpeechRecognition library directly if possible.
+            # Best practice: Call backend.process_audio_data(audio_bytes)
+            if hasattr(self.speech_backend, 'process_audio_data'):
+                text = self.speech_backend.process_audio_data(audio_bytes)
+                self._handle_result(text)
+            else:
+                self._handle_result(None, error="Backend missing process_audio_data")
+        except Exception as ex:
+            self._handle_result(None, error=str(ex))
+
+    def _handle_result(self, text, error=None):
+        if error:
+            self.mode1_result.value = f"변환 오류: {error}"
+        elif text:
+            self.mode1_result.value = text
+        else:
+             self.mode1_result.hint_text = "음성을 인식하지 못했습니다. 다시 시도해주세요."
+
         self.mode1_result.hint_text = "한국어로 말하거나 입력하세요"
 
         self.mode1_stop_btn.visible = False
         self.mode1_start_btn.visible = True
         self.mode1_start_btn.disabled = False
-        # self.mode1_start_btn.content = ft.Text("여기를 눌러 원하는 한국어를 말하세요") # N/A for IconButton
         
         self.mode1_stop_btn.update()
         self.mode1_start_btn.update()
