@@ -7,35 +7,78 @@ import flet as ft
 from .speech_backend import SpeechBackend
 
 # JavaScript Code to be injected
-# Handles MediaRecorder and notifies Python via window.location.hash
+# Uses AudioContext to record RAW PCM and encode to WAV (to satisfy Python SpeechRecognition)
 JS_CODE = """
-window.audioChunks = [];
-window.mediaRecorder = null;
+window.audioContext = null;
+window.mediaStream = null;
+window.processor = null;
+window.input = null;
+window.audioData = [];
+
+function writeWavHeader(sampleRate, dataLength) {
+    const buffer = new ArrayBuffer(44);
+    const view = new DataView(buffer);
+    
+    // RIFF identifier 'RIFF'
+    view.setUint32(0, 1179011410, false);
+    // file length minus RIFF identifier length and file description length
+    view.setUint32(4, 36 + dataLength, true);
+    // RIFF type 'WAVE'
+    view.setUint32(8, 1163280727, false);
+    // format chunk identifier 'fmt '
+    view.setUint32(12, 544501094, false);
+    // format chunk length
+    view.setUint32(16, 16, true);
+    // sample format (raw)
+    view.setUint16(20, 1, true);
+    // channel count
+    view.setUint16(22, 1, true);
+    // sample rate
+    view.setUint32(24, sampleRate, true);
+    // byte rate (sample rate * block align)
+    view.setUint32(28, sampleRate * 2, true);
+    // block align (channel count * bytes per sample)
+    view.setUint16(32, 2, true);
+    // bits per sample
+    view.setUint16(34, 16, true);
+    // data chunk identifier 'data'
+    view.setUint32(36, 1635017060, false);
+    // data chunk length
+    view.setUint32(40, dataLength, true);
+
+    return buffer;
+}
+
+function floatTo16BitPCM(output, offset, input) {
+    for (let i = 0; i < input.length; i++, offset += 2) {
+        let s = Math.max(-1, Math.min(1, input[i]));
+        output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+}
 
 window.startRecording = async function() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        window.mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-        window.audioChunks = [];
-
-        window.mediaRecorder.ondataavailable = (event) => {
-            window.audioChunks.push(event.data);
+        console.log("JS: Requesting microphone...");
+        window.audioData = [];
+        window.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        window.input = window.audioContext.createMediaStreamSource(window.mediaStream);
+        
+        // bufferSize: 4096, numInputChannels: 1, numOutputChannels: 1
+        window.processor = window.audioContext.createScriptProcessor(4096, 1, 1);
+        
+        window.processor.onaudioprocess = function(e) {
+            const channelData = e.inputBuffer.getChannelData(0);
+            // Clone data because channelData is reused
+            window.audioData.push(new Float32Array(channelData));
         };
-
-        window.mediaRecorder.onstop = () => {
-             const audioBlob = new Blob(window.audioChunks, { type: 'audio/webm' });
-             const reader = new FileReader();
-             reader.readAsDataURL(audioBlob);
-             reader.onloadend = () => {
-                 const base64data = reader.result;
-                 // Pass data to Flet via Hash
-                 // Prefix 'audio_data:' to identify
-                 window.location.hash = "audio_data:" + base64data.split(',')[1]; 
-             };
-        };
-
-        window.mediaRecorder.start();
+        
+        window.input.connect(window.processor);
+        window.processor.connect(window.audioContext.destination);
+        
         console.log("JS: Recording started");
+        
     } catch (err) {
         console.error("JS: Error starting recording", err);
         window.location.hash = "error:" + err.message;
@@ -43,11 +86,50 @@ window.startRecording = async function() {
 }
 
 window.stopRecording = function() {
-    if (window.mediaRecorder && window.mediaRecorder.state !== 'inactive') {
-        window.mediaRecorder.stop();
-        console.log("JS: Recording stopped");
-        // Stop all tracks to release mic
-        window.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+    if (window.processor && window.audioContext) {
+        window.processor.disconnect();
+        window.input.disconnect();
+        if (window.mediaStream) {
+            window.mediaStream.getTracks().forEach(track => track.stop());
+        }
+        
+        console.log("JS: Recording stopped. Processing WAV...");
+        
+        // Merge Buffers
+        let bufferLength = 0;
+        for (let i = 0; i < window.audioData.length; i++) {
+            bufferLength += window.audioData[i].length;
+        }
+        
+        const wavBuffer = new ArrayBuffer(44 + bufferLength * 2);
+        const view = new DataView(wavBuffer);
+        
+        // Write Header
+        const header = writeWavHeader(window.audioContext.sampleRate, bufferLength * 2);
+        new Uint8Array(wavBuffer).set(new Uint8Array(header), 0);
+        
+        // Write PCM Data
+        let offset = 44;
+        for (let i = 0; i < window.audioData.length; i++) {
+            floatTo16BitPCM(view, offset, window.audioData[i]);
+            offset += window.audioData[i].length * 2;
+        }
+        
+        // Convert to Base64
+        const blob = new Blob([view], { type: 'audio/wav' });
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+             const base64data = reader.result;
+             console.log("JS: WAV Ready, sending hash...");
+             // Pass data to Flet via Hash
+             window.location.hash = "audio_data:" + base64data.split(',')[1]; 
+        };
+        
+        // Cleanup
+        window.audioContext.close();
+        window.audioContext = null;
+        window.processor = null;
     }
 }
 """
