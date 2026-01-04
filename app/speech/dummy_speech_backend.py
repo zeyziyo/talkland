@@ -25,19 +25,22 @@ class DummySpeechBackend(SpeechBackend):
     # STT
     # =========================
 
-    def start_stt(self, on_silence=None, lang: str = "ko-KR") -> None:
+    def start_stt(self, *args, **kwargs):
         """음성 인식 시작 (더미 - 아무것도 하지 않음)"""
-        print(f"[DummySpeechBackend] STT not available on this platform")
+        print("Dummy start_stt called. Backend is inactive.")
 
-    def stop_stt(self) -> Optional[str]:
+    def stop_stt(self) -> str:
         """음성 인식 종료 (더미 - 빈 문자열 반환)"""
-        print(f"[DummySpeechBackend] STT not available")
-        return ""
+        msg = "음성 인식 기능이 비활성화되었습니다."
+        if self.init_error:
+            msg += f"\n(초기화 오류: {self.init_error})"
+        return msg
 
     # =========================
     # TTS
     # =========================
 
-    def speak(self, text: str, slow: bool = False, lang: str = "ko-KR") -> None:
+    def speak(self, text: str, slow: bool = False) -> None:
         """텍스트를 음성으로 출력 (더미 - 아무것도 하지 않음)"""
-        print(f"[DummySpeechBackend] TTS not available: {text}")
+        print(f"Dummy speak: {text}")
+```

@@ -140,7 +140,14 @@ class Mode1Section(ft.Column):
         # Check if it's a dummy backend
         backend_type = type(self.speech_backend).__name__
         if backend_type == "DummySpeechBackend":
-            self.mode1_result.value = "⚠️ 음성 인식 기능은 현재 Android에서 지원되지 않습니다.\n텍스트를 직접 입력해주세요."
+            error_msg = getattr(self.speech_backend, 'init_error', None)
+            display_msg = "⚠️ 음성 인식 기능 초기화 실패"
+            if error_msg:
+                display_msg += f"\n오류 상세: {error_msg}"
+            else:
+                display_msg += "\n(지원되지 않는 환경)"
+            
+            self.mode1_result.value = display_msg
             self.mode1_result.update()
             return
         

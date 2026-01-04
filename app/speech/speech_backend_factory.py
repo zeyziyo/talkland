@@ -102,5 +102,5 @@ def create_speech_backend(page: Any) -> SpeechBackend:
         print(f"[Factory] Backend initialization failed: {e}")
         import traceback
         traceback.print_exc()
-        return DummySpeechBackend()
+        return DummySpeechBackend(init_error=str(e))
 
