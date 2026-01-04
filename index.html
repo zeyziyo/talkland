@@ -17,74 +17,29 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png" />
 
+  <!-- Flet specific -->
+  <meta name="flet-route-url-strategy" content="path">
+  <meta name="flet-web-pyodide" content="true">
+  <meta name="flet-websocket-endpoint-path" content="/ws">
+
   <title>TalkLand</title>
   <link rel="manifest" href="manifest.json">
 
   <script>
-    var flet = {
-      pyodide: false,
-      multiView: false,
-      noCdn: false,
-      webSocketEndpoint: "/ws",
-      entrypointBaseUrl: "/",
-      assetBase: "/",
-      routeUrlStrategy: "path",
-      canvasKitBaseUrl: "/canvaskit/",
-      pyodideUrl: "/pyodide/pyodide.js",
-      webRenderer: "auto",
-      fontFallbackBaseUrl: "assets/fonts/", // for Noto Emoji, use Google CDN
-      appPackageUrl: "app.tar.gz"
-    }
-
-    flet.flutterAppLoaded = new Promise((resolve) => {
-      flet.flutterAppResolve = resolve;
-    });
-
-    flet.flutterAppLoaded.then((flutterApp) => {
-      console.log("Flutter app loaded");
-      if (flet.multiView) {
-        console.log(flutterApp.addView({
-          hostElement: document.querySelector('#view-1'),
-          initialData: {
-            script: 'print("Hello from view 1")',
-            randomValue: Math.floor(Math.random() * 100),
-          },
-          viewConstraints: {
-            //maxWidth: Infinity,
-            maxHeight: Infinity,
-            minHeight: 300,
-            minWidth: 620
-          }
-        }));
-        console.log(flutterApp.addView({
-          hostElement: document.querySelector('#view-2'),
-          initialData: {
-            script: 'print("Hello from view 2")',
-            bar: "baz"
-          },
-          viewConstraints: {
-            minWidth: 620,
-            //maxWidth: 320,
-            //minHeight: 400,
-            maxHeight: 400,
-          }
-        }));
-      }
-    });
+    var webRenderer = "auto";
+    var useColorEmoji = false;
   </script>
 
-  <script>
-flet.pyodide = true;
-flet.micropipIncludePre = false;
-flet.pythonModuleName = "main";
-flet.noCdn=false;
-flet.webRenderer="auto";
-flet.routeUrlStrategy="path";
-flet.entrypointBaseUrl="/talkland/";
-flet.assetBase="/talkland/";
-</script>
+  <script>webRenderer="canvaskit";</script>
+  <script>useColorEmoji=false;</script>
 
-  <script src="python.js"></script>
+  
+        <script>
+            var micropipIncludePre = false;
+            var pythonModuleName = "main";
+        </script>
+        <script src="python.js"></script>
+        
 </head>
 
 <body>
@@ -146,10 +101,5 @@ flet.assetBase="/talkland/";
     <img src="icons/loading-animation.png" alt="Loading..." />
   </div>
   <script src="flutter_bootstrap.js" async></script>
-
-  <!-- <h1>View 1</h1>
-  <div id="view-1" style="display: flex; justify-content: center;"></div>
-  <h1>View 2</h1>
-  <div id="view-2"></div> -->
 </body>
 </html>
