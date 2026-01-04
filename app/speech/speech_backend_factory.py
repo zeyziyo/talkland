@@ -63,6 +63,12 @@ def create_speech_backend(page: Any) -> SpeechBackend:
     # 3. Detect Platform
     is_web = False
     
+    # Debugging: Print all relevant properties
+    print(f"[Factory DEBUG] sys.platform: {sys.platform}")
+    if page:
+        print(f"[Factory DEBUG] page.web: {getattr(page, 'web', 'N/A')}")
+        print(f"[Factory DEBUG] page.platform: {getattr(page, 'platform', 'N/A')}")
+    
     # Check 1: Flet page.web property (Most reliable for PWA)
     if hasattr(page, 'web') and page.web:
         is_web = True
