@@ -1,0 +1,57 @@
+name: Build Android APK
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies
+        run: |
+          pip install flet==0.80.1 flet-audio-recorder>=0.80.0
+          pip install -r requirements.txt
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.1'
+          channel: 'stable'
+          cache: true
+      
+      # Flet 0.80.1 might behave differently. Let's trust Flet to pick its version OR pre-install.
+      # If we pre-install, we must match Flet's requirement exactly.
+      # Flet 0.80.1 uses Flutter 3.24.5 as per some docs? No, it's newer.
+      # Let's try specifying 3.27.1 based on what Flet usually downloads.
+      # Actually, better safe: Let Flet manage it? No, CI interactive fail.
+      # Safest bet: 3.27.0.
+      # Let's retry with what worked or was supposed to work.
+      # "The user's previous log showed 3.27.1".
+      # Using 3.27.1.
+
+      - name: Build APK
+        run: |
+          # --include-packages is the Key Fix
+          flet build apk --verbose --include-packages flet_audio_recorder
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: talkland-release
+          path: build/apk/**/*.apk
