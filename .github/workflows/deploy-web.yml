@@ -23,13 +23,13 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install flet==0.80.1
+          pip install flet==0.27.0
           pip install -r requirements.txt
 
       - name: Flet Publish
         run: |
-          # Bundling for Web (Force standard client via prompt bypass if needed)
-          yes | flet publish main.py --app-name "TalkLand" --app-description "Simple Language App" --base-url "/talkland/"
+          # Bundling for Web
+          flet publish main.py --app-name "TalkLand" --app-description "Simple Language App" --base-url "/talkland/"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

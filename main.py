@@ -79,11 +79,7 @@ def main(page: ft.Page) -> None:
         mode1_section = Mode1Section(page, speech_backend, SOURCE_LANG, TARGET_LANG)
         mode2_section = Mode2Section(page)
         
-        # [JS Bridge Integration]
-        # If the backend supports async callbacks (WebJsBackend), connect it to the UI
-        if hasattr(speech_backend, 'set_callback') and hasattr(mode1_section, 'on_audio_data'):
-            print("Main: Wiring up async audio callback")
-            speech_backend.set_callback(mode1_section.on_audio_data)
+
     
         # -----------------
         # MODE 전환 로직
