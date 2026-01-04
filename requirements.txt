@@ -1,4 +1,4 @@
 flet==0.80.1
-flet-audio-recorder>=0.80.0
+
 deep-translator
 SpeechRecognition
