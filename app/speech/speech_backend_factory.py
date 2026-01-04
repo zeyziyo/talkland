@@ -54,54 +54,46 @@ def create_speech_backend(page: Any) -> SpeechBackend:
     try:
         from .dummy_speech_backend import DummySpeechBackend
     except ImportError:
-        # Should not happen, but as a last resort define inline or fail
         print("[Factory] CRITICAL: Could not import DummySpeechBackend")
         class DummySpeechBackend(SpeechBackend): # Inline fallback
             def start_stt(self, *args, **kwargs): pass
             def stop_stt(self) -> str: return "Critical Error: Dummy Backend Missing"
             def speak(self, *args, **kwargs): pass
 
-    # 3. Web / Pyodide
-    if is_web_runtime():
-        print("[Factory] Environment: Web/Pyodide")
-        try:
-            from .web_speech_backend import WebSpeechBackend
-            return WebSpeechBackend(page)
-        except Exception as e:
-            print(f"[Factory] Failed to load WebSpeechBackend: {e}")
-            return DummySpeechBackend()
-
-    # 4. Android / iOS (Mobile)
-    # Check "android" or "ios" in the platform string case-insensitively
-    is_mobile = False
-    if platform_info:
-        p = platform_info.lower()
-        if "android" in p or "ios" in p:
-            is_mobile = True
+    # 3. Detect Platform
+    is_web = False
     
-    if is_mobile:
-        print(f"[Factory] Environment: Mobile ({platform_info})")
-        try:
-            # Try to import Android backend
-            # This might fail if dependencies (like sounddevice if wrongly imported) are missing
-            print("[Factory] Attempting to import AndroidSpeechBackend...")
+    # Check 1: Flet page.web property (Most reliable for PWA)
+    if hasattr(page, 'web') and page.web:
+        is_web = True
+    # Check 2: Pyodide sys.platform
+    elif sys.platform == "emscripten":
+        is_web = True
+        
+    print(f"[Factory] Platform Detection - Web: {is_web}")
+
+    # 4. Return Backend
+    try:
+        if is_web:
+            # Plan C: Use AndroidSpeechBackend for Web (It handles Blob URLs)
+            print("[Factory] Using AndroidSpeechBackend for Web (PWA Mode)")
             from .android_speech_backend import AndroidSpeechBackend
             return AndroidSpeechBackend(page)
-        except Exception as e:
-            print(f"[Factory] Failed to load AndroidSpeechBackend: {e}")
-            import traceback
-            traceback.print_exc()
-            print("[Factory] Fallback to DummySpeechBackend")
-            return DummySpeechBackend()
-
-    # 5. Desktop (Windows/Mac/Linux)
-    print("[Factory] Environment: Desktop")
-    try:
-        print("[Factory] Attempting to import DesktopSpeechBackend...")
-        from .desktop_speech_backend import DesktopSpeechBackend
-        return DesktopSpeechBackend()
+            
+        elif platform_info and ("android" in platform_info.lower() or "ios" in platform_info.lower()):
+            # Mobile
+            print(f"[Factory] Using AndroidSpeechBackend for Mobile ({platform_info})")
+            from .android_speech_backend import AndroidSpeechBackend
+            return AndroidSpeechBackend(page)
+            
+        else:
+            # Desktop
+            print("[Factory] Using DesktopSpeechBackend")
+            from .desktop_speech_backend import DesktopSpeechBackend
+            return DesktopSpeechBackend()
+            
     except Exception as e:
-        print(f"[Factory] Failed to load DesktopSpeechBackend: {e}")
+        print(f"[Factory] Backend initialization failed: {e}")
         import traceback
         traceback.print_exc()
         return DummySpeechBackend()
