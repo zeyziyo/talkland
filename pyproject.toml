@@ -17,6 +17,15 @@ include = ["app*"]
 [tool.flet]
 platforms = ["android"]
 
+# App metadata
+[tool.flet.app]
+name = "TalkLand"
+description = "Language Learning App"
+
+# App icon
+[tool.flet.app.icon]
+path = "assets/icon.png"
+
 [tool.flet.android]
 permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
 min_sdk_version = 24
