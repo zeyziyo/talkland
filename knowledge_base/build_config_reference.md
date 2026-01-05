@@ -136,6 +136,7 @@ platforms = ["android"]
 
 [tool.flet.android]
 permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
+min_sdk_version = 23
 
 [tool.flet.flutter.dependencies]
 flet_audio_recorder = "^0.80.0"
