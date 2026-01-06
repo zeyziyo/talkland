@@ -30,6 +30,13 @@ def index():
     """HTML UI 서빙"""
     return render_template('index.html')
 
+# 정적 파일 서빙 (PWA)
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    """PWA 파일 서빙"""
+    from flask import send_from_directory
+    return send_from_directory('static', filename)
+
 # ===========================================
 # Translation API
 # ===========================================

@@ -5,6 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TalkLand - 언어 학습</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/static/manifest.json">
+
+    <!-- iOS Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TalkLand">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#667eea">
+
     <style>
         * {
             margin: 0;
@@ -315,10 +328,10 @@
                 'fr-FR': 'fr',
                 'de-DE': 'de'
             };
-            
+
             const sourceLangFull = document.getElementById('sourceLang').value;
             const targetLangFull = document.getElementById('targetLang').value;
-            
+
             const sourceLang = langMap[sourceLangFull] || sourceLangFull.split('-')[0];
             const targetLang = langMap[targetLangFull] || targetLangFull.split('-')[0];
 
@@ -410,6 +423,17 @@
                 console.error('TTS error:', error);
                 showStatus('음성 생성 실패', 'error');
             }
+        }
+
+        // ========================================
+        // PWA: Service Worker 등록
+        // ========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(reg => console.log('[PWA] Service Worker registered:', reg))
+                    .catch(err => console.error('[PWA] SW registration failed:', err));
+            });
         }
     </script>
 </body>
