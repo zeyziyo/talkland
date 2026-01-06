@@ -3,3 +3,12 @@ flet-audio-recorder
 
 deep-translator
 SpeechRecognition
+
+# Server dependencies
+flask
+flask-cors
+edge-tts
+
+# Production server
+gunicorn
+

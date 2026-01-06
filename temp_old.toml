@@ -1,0 +1,29 @@
+[project]
+name = "talkland"
+version = "0.1.0"
+description = "TalkLand - Language Learning App"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flet==0.80.1",
+    "flet-audio-recorder>=0.80.0",
+    "deep-translator",
+    "SpeechRecognition"
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.flet]
+platforms = ["android"]
+
+[tool.flet.android]
+permissions = ["android.permission.RECORD_AUDIO", "android.permission.INTERNET"]
+min_sdk_version = 24
+
+[tool.flet.flutter.dependencies]
+flet_audio_recorder = "^0.80.0"
+
+
+
+

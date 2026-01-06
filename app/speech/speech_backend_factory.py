@@ -69,26 +69,29 @@ def create_speech_backend(page: Any) -> SpeechBackend:
         print(f"[Factory DEBUG] page.web: {getattr(page, 'web', 'N/A')}")
         print(f"[Factory DEBUG] page.platform: {getattr(page, 'platform', 'N/A')}")
     
-    # Check 1: Flet page.web property (Most reliable for PWA)
-    if hasattr(page, 'web') and page.web:
+    # Check 1: Flet page.web property (Most reliable)
+    # IMPORTANT: page.web must be explicitly True, not just exist
+    if hasattr(page, 'web') and page.web == True:
         is_web = True
+        print("[Factory] Detected Web mode via page.web == True")
     # Check 2: Pyodide sys.platform
     elif sys.platform == "emscripten":
         is_web = True
+        print("[Factory] Detected Web mode via sys.platform == emscripten")
         
     print(f"[Factory] Platform Detection - Web: {is_web}")
 
     # 4. Return Backend
     try:
         if is_web:
-            # Plan C: Use AndroidSpeechBackend (Flet AudioRecorder) for Web
-            print("[Factory] Using AndroidSpeechBackend for Web (Standard)")
-            from .android_speech_backend import AndroidSpeechBackend
-            return AndroidSpeechBackend(page)
+            # Web mode: Use WebSpeechBackend (browser APIs)
+            print("[Factory] Using WebSpeechBackend for Web/Browser")
+            from .web_speech_backend import WebSpeechBackend
+            return WebSpeechBackend(page)
             
         elif platform_info and ("android" in platform_info.lower() or "ios" in platform_info.lower()):
-            # Mobile
-            print(f"[Factory] Using AndroidSpeechBackend for Mobile ({platform_info})")
+            # Mobile APK: Use AndroidSpeechBackend (Flet AudioRecorder)
+            print(f"[Factory] Using AndroidSpeechBackend for Mobile APK ({platform_info})")
             from .android_speech_backend import AndroidSpeechBackend
             return AndroidSpeechBackend(page)
             

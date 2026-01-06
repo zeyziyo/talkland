@@ -11,6 +11,10 @@ class Mode1Section(ft.Column):
         self.source_lang = source_lang
         self.target_lang = target_lang
         
+        # Voice settings (will be updated from main.py)
+        self.source_voice = None  # e.g., "ko-KR-Neural2-C"
+        self.target_voice = None  # e.g., "es-ES-Neural2-A"
+        
         self.is_recording = False
         
         # UI Components
@@ -124,9 +128,15 @@ class Mode1Section(ft.Column):
         self.mode1_tts_btn.update()
     
     def on_tts_click(self, e):
+        """TTS button clicked - play translated text with target voice"""
         if self.speech_backend is None:
             return
-        self.speech_backend.speak(self.mode1_translated.value or "No text", lang=self.target_lang)
+        
+        text = self.mode1_translated.value or "No text"
+        
+        # Use target language code for TTS
+        # Pass the language code (ko, es, ja) not locale (ko-KR, es-ES)
+        self.speech_backend.speak(text, lang=self.target_lang)
 
     def run_mode1(self, e=None):
         print(f"run_mode1 called. Current state: is_recording={self.is_recording}")

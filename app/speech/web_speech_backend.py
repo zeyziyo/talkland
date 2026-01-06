@@ -37,127 +37,121 @@ class WebSpeechBackend(SpeechBackend):
         self.page: Any = page
         self._result: Optional[str] = None
         self._on_silence = None
-
-        try:
-            # JS → Python 이벤트 수신
-            print("[WebSpeechBackend] Setting up event listener...")
-            on_event_func = getattr(self.page, "on_event", None)
-            if on_event_func is None:
-                raise AttributeError("page.on_event not available")
-            
-            on_event_func("stt-result", self._on_stt_result)
-            print("[WebSpeechBackend] Event listener registered successfully")
-
-            # JS 로드 (인라인 방식으로 변경 - Android 호환성)
-            print("[WebSpeechBackend] Loading inline JavaScript...")
-            js_code = """
-let recognition = null;
-
-// =========================
-// STT
-// =========================
-function startSTT(lang = 'ko-KR') {
-    console.log('[WebSpeech] Starting STT with lang:', lang);
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-        console.log('[WebSpeech] Speech recognition not supported');
-        flet.sendEvent("stt-result", { text: "" });
-        return;
-    }
-
-    const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    recognition = new SpeechRecognition();
-    recognition.lang = lang;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onresult = (event) => {
-        const text = event.results[0][0].transcript;
-        console.log('[WebSpeech] STT result:', text);
-        flet.sendEvent("stt-result", { text });
-    };
-
-    recognition.onerror = (error) => {
-        console.log('[WebSpeech] STT error:', error);
-        flet.sendEvent("stt-result", { text: "" });
-    };
-
-    recognition.start();
-    console.log('[WebSpeech] STT started');
-}
-
-function stopSTT() {
-    console.log('[WebSpeech] Stopping STT');
-    if (recognition) {
-        recognition.stop();
-        recognition = null;
-    }
-}
-
-// =========================
-// TTS
-// =========================
-function speak(text, slow = false, lang = 'ko-KR') {
-    console.log('[WebSpeech] Speaking:', text, 'lang:', lang);
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang;
-    utter.rate = slow ? 0.7 : 1.0;
-    speechSynthesis.speak(utter);
-}
-
-console.log('[WebSpeech] JavaScript loaded successfully');
-"""
-            run_js_func = getattr(self.page, "run_js", None)
-            if run_js_func is None:
-                raise AttributeError("page.run_js not available")
-            
-            run_js_func(js_code)
-            print("[WebSpeechBackend] JavaScript loaded successfully")
-            
-        except Exception as e:
-            print(f"[WebSpeechBackend] Initialization error: {e}")
-            import traceback
-            traceback.print_exc()
-            raise
-
-    # =========================
+        
+        # 서버 TTS URL 설정
+        # 개발: http://localhost:5000
+        # 배포: https://your-app.fly.dev
+        import os
+        self.server_url = os.getenv('TTS_SERVER_URL', 'http://localhost:5000')
+        
+        print(f"[WebSpeechBackend] TTS Server URL: {self.server_url}")
+        print("[WebSpeechBackend] Initialization complete")
+    
+    # ===========================================
     # STT
-    # =========================
+    # ===========================================
 
     def start_stt(self, on_silence=None, lang: str = "ko-KR") -> None:
-        """음성 인식 시작 (JS)
-        
-        Args:
-            on_silence: Callback for silence detection (not implemented in web)
-            lang: Language code for STT (e.g., 'ko-KR', 'en-US')
-        """
+        """음성 인식 시작 (간소화 모드)"""
+        print(f"[WebSpeechBackend] STT requested for lang: {lang}")
+        print("[WebSpeechBackend] Note: Direct browser Web Speech API access required")
         self._result = None
         self._on_silence = on_silence
-        # Pass language to JS
-        getattr(self.page, "run_js")(f"startSTT('{lang}');")
 
     def stop_stt(self) -> Optional[str]:
         """음성 인식 종료 및 결과 반환"""
-        getattr(self.page, "run_js")("stopSTT();")
-        return self._result
+        print("[WebSpeechBackend] STT stop requested")
+        # 웹 모드에서는 브라우저가 직접 처리해야 함
+        return self._result or "웹 모드: 브라우저 콘솔 확인 필요"
 
-    # =========================
+    # ===========================================
     # TTS
-    # =========================
+    # ===========================================
 
-    def speak(self, text: str, slow: bool = False, lang: str = "ko-KR") -> None:
-        """텍스트를 음성으로 출력 (JS)
+    def speak(self, text: str, slow: bool = False, lang: str = "ko-KR", voice: str = None) -> None:
+        """
+        서버 TTS API로 음성 출력
         
         Args:
-            text: Text to speak
-            slow: Whether to speak slowly
-            lang: Language code for TTS (e.g., 'ko-KR', 'es-ES')
+            text: 음성으로 변환할 텍스트
+            slow: 느리게 말하기 (rate 조정)
+            lang: 언어 코드 (예: 'ko', 'ja', 'es')
+            voice: 음성 코드 (예: 'ko-KR-Neural2-C')
         """
-        slow_js = "true" if slow else "false"
-        getattr(self.page, "run_js")(
-            f"speak({text!r}, {slow_js}, '{lang}');"
-        )
+        print(f"[WebSpeechBackend] Server TTS requested: '{text}' in {lang}")
+        
+        # 음성 코드 매핑 (간단한 버전)
+        if not voice:
+            voice_map = {
+                "ko": "ko-KR-SunHiNeural",
+                "en": "en-US-JennyNeural",
+                "es": "es-ES-AlvaroNeural",
+                "ja": "ja-JP-NanamiNeural",
+                "zh": "zh-CN-XiaoxiaoNeural",
+                "fr": "fr-FR-DeniseNeural",
+                "de": "de-DE-KatjaNeural",
+            }
+            voice = voice_map.get(lang, "en-US-JennyNeural")
+        
+        rate = "-20%" if slow else "+0%"
+        
+        # JavaScript로 서버 TTS 호출
+        js_code = f"""
+        (async function() {{
+            try {{
+                console.log('[WebSpeechBackend] Calling server TTS...');
+                
+                const response = await fetch('{self.server_url}/api/tts', {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/json'
+                    }},
+                    body: JSON.stringify({{
+                        text: {text!r},
+                        voice: '{voice}',
+                        rate: '{rate}'
+                        // volume: '100%', // Optional
+                        // pitch: '0Hz' // Optional
+                    }})
+                }});
+                
+                if (!response.ok) {{
+                    throw new Error('Server TTS failed: ' + response.status);
+                }}
+                
+                const blob = await response.blob();
+                const audioUrl = URL.createObjectURL(blob);
+                const audio = new Audio(audioUrl);
+                
+                audio.onended = () => {{
+                    URL.revokeObjectURL(audioUrl);
+                    console.log('[WebSpeechBackend] TTS playback complete');
+                }};
+                
+                audio.play();
+                console.log('[WebSpeechBackend] Playing server TTS');
+                
+            }} catch (error) {{
+                console.error('[WebSpeechBackend] Server TTS error:', error);
+                
+                // 폴백: 브라우저 기본 TTS
+                console.log('[WebSpeechBackend] Falling back to browser TTS');
+                const utter = new SpeechSynthesisUtterance({text!r});
+                utter.lang = '{lang}-{lang.upper()}';
+                utter.rate = {0.7 if slow else 1.0};
+                speechSynthesis.speak(utter);
+            }}
+        }})();
+        """
+        
+        try:
+            # JavaScript 실행 시도
+            if hasattr(self.page, 'run_js'):
+                self.page.run_js(js_code)
+            else:
+                print("[WebSpeechBackend] page.run_js not available, cannot execute TTS")
+        except Exception as e:
+            print(f"[WebSpeechBackend] JavaScript execution error: {e}")
 
     # =========================
     # 내부 이벤트 핸들러

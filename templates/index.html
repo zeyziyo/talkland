@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalkLand - 언어 학습</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .recording {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .status.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .settings {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🌍 TalkLand</h1>
+
+        <div class="settings">
+            <div style="margin-bottom: 10px;">
+                <label class="section-title">모국어</label>
+                <select id="sourceLang">
+                    <option value="ko-KR">한국어</option>
+                    <option value="en-US">English</option>
+                    <option value="es-ES">Español</option>
+                    <option value="ja-JP">日本語</option>
+                    <option value="zh-CN">中文</option>
+                </select>
+            </div>
+            <div>
+                <label class="section-title">대상 언어</label>
+                <select id="targetLang">
+                    <option value="ko-KR">한국어</option>
+                    <option value="en-US">English</option>
+                    <option value="es-ES">Español</option>
+                    <option value="ja-JP" selected>日本語</option>
+                    <option value="zh-CN">中文</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📚 원문</div>
+            <textarea id="sourceText" placeholder="말하거나 입력하세요..."></textarea>
+            <div class="button-group">
+                <button id="btnStartSTT" class="btn-primary btn-icon" onclick="startSTT()">
+                    <span>🎤</span> 말하기
+                </button>
+                <button id="btnStopSTT" class="btn-danger btn-icon hidden" onclick="stopSTT()">
+                    <span>⏹️</span> 정지
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎯 번역</div>
+            <textarea id="translatedText" placeholder="번역 결과..." readonly></textarea>
+            <div class="button-group">
+                <button class="btn-primary" onclick="doTranslate()">
+                    🔄 번역하기
+                </button>
+                <button class="btn-secondary btn-icon" onclick="playTTS()">
+                    <span>🔊</span> 듣기
+                </button>
+            </div>
+        </div>
+
+        <div id="status" class="status hidden"></div>
+    </div>
+
+    <script>
+        let recognition = null;
+        const voiceMap = {
+            'ko-KR': 'ko-KR-SunHiNeural',
+            'en-US': 'en-US-JennyNeural',
+            'es-ES': 'es-ES-AlvaroNeural',
+            'ja-JP': 'ja-JP-NanamiNeural',
+            'zh-CN': 'zh-CN-XiaoxiaoNeural'
+        };
+
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.classList.remove('hidden');
+            setTimeout(() => status.classList.add('hidden'), 3000);
+        }
+
+        function startSTT() {
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                showStatus('음성 인식을 지원하지 않는 브라우저입니다', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+
+            const sourceLang = document.getElementById('sourceLang').value;
+            recognition.lang = sourceLang;
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                document.getElementById('btnStartSTT').classList.add('hidden');
+                document.getElementById('btnStopSTT').classList.remove('hidden');
+                document.getElementById('btnStopSTT').classList.add('recording');
+                showStatus('듣고 있습니다...', 'info');
+            };
+
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                document.getElementById('sourceText').value = text;
+                showStatus('인식 완료!', 'success');
+            };
+
+            recognition.onerror = (error) => {
+                console.error('STT error:', error);
+                showStatus('음성 인식 실패', 'error');
+                stopSTT();
+            };
+
+            recognition.onend = () => {
+                stopSTT();
+            };
+
+            recognition.start();
+        }
+
+        function stopSTT() {
+            if (recognition) {
+                recognition.stop();
+                recognition = null;
+            }
+            document.getElementById('btnStartSTT').classList.remove('hidden');
+            document.getElementById('btnStopSTT').classList.add('hidden');
+            document.getElementById('btnStopSTT').classList.remove('recording');
+        }
+
+        async function doTranslate() {
+            const sourceText = document.getElementById('sourceText').value.trim();
+            if (!sourceText) {
+                showStatus('번역할 텍스트를 입력하세요', 'error');
+                return;
+            }
+
+            const sourceLang = document.getElementById('sourceLang').value.split('-')[0];
+            const targetLang = document.getElementById('targetLang').value.split('-')[0];
+
+            console.log('Translation request:', { sourceText, sourceLang, targetLang });
+            showStatus('번역 중...', 'info');
+
+            try {
+                const requestBody = {
+                    text: sourceText,
+                    source_lang: sourceLang,
+                    target_lang: targetLang
+                };
+
+                console.log('Sending to /api/translate:', requestBody);
+
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Translation result:', data);
+
+                if (data.error) {
+                    showStatus('번역 실패: ' + data.error, 'error');
+                    alert(data.error);
+                } else {
+                    document.getElementById('translatedText').value = data.translated_text;
+                    showStatus('번역 완료!', 'success');
+                }
+            } catch (error) {
+                console.error('Translation error:', error);
+                showStatus('번역 실패: ' + error.message, 'error');
+                alert('번역 오류: ' + error.message + '\n\n브라우저 콘솔(F12)을 확인하세요.');
+            }
+        }
+
+        async function playTTS() {
+            const text = document.getElementById('translatedText').value.trim();
+            if (!text) {
+                showStatus('재생할 텍스트가 없습니다', 'error');
+                return;
+            }
+
+            const targetLang = document.getElementById('targetLang').value;
+            const voice = voiceMap[targetLang];
+
+            showStatus('음성 생성 중...', 'info');
+
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        voice: voice,
+                        rate: '+0%'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('TTS failed');
+                }
+
+                const blob = await response.blob();
+                const audioUrl = URL.createObjectURL(blob);
+                const audio = new Audio(audioUrl);
+
+                audio.onended = () => {
+                    URL.revokeObjectURL(audioUrl);
+                    showStatus('재생 완료', 'success');
+                };
+
+                audio.onerror = () => {
+                    showStatus('재생 실패', 'error');
+                };
+
+                audio.play();
+                showStatus('재생 중...', 'info');
+
+            } catch (error) {
+                console.error('TTS error:', error);
+                showStatus('음성 생성 실패', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

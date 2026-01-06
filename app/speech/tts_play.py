@@ -11,12 +11,18 @@ text = sys.argv[1]
 lang = sys.argv[2] if len(sys.argv) > 2 else "ko"
 slow = "slow" in sys.argv
 
-# Voice Selection
+# Voice Selection - Edge TTS voices for each language
 VOICE_MAP = {
-    "ko": "ko-KR-SunHiNeural",
-    "es": "es-ES-AlvaroNeural",
+    "ko": "ko-KR-SunHiNeural",        # 한국어
+    "en": "en-US-JennyNeural",        # English
+    "es": "es-ES-AlvaroNeural",       # Español
+    "ja": "ja-JP-NanamiNeural",       # 日本語
+    "zh": "zh-CN-XiaoxiaoNeural",     # 中文
+    "zh-CN": "zh-CN-XiaoxiaoNeural",  # 中文 (간체)
+    "fr": "fr-FR-DeniseNeural",       # Français
+    "de": "de-DE-KatjaNeural",        # Deutsch
 }
-voice = VOICE_MAP.get(lang, "ko-KR-SunHiNeural")
+voice = VOICE_MAP.get(lang, "en-US-JennyNeural")  # Default to English
 
 # Pitch/Rate adjustment
 rate = "-20%" if slow else "+0%"
