@@ -305,8 +305,22 @@
                 return;
             }
 
-            const sourceLang = document.getElementById('sourceLang').value.split('-')[0];
-            const targetLang = document.getElementById('targetLang').value.split('-')[0];
+            // Language code mapping for deep-translator compatibility
+            const langMap = {
+                'ko-KR': 'ko',
+                'en-US': 'en',
+                'es-ES': 'es',
+                'ja-JP': 'ja',
+                'zh-CN': 'zh-CN',  // Keep full code for Chinese
+                'fr-FR': 'fr',
+                'de-DE': 'de'
+            };
+            
+            const sourceLangFull = document.getElementById('sourceLang').value;
+            const targetLangFull = document.getElementById('targetLang').value;
+            
+            const sourceLang = langMap[sourceLangFull] || sourceLangFull.split('-')[0];
+            const targetLang = langMap[targetLangFull] || targetLangFull.split('-')[0];
 
             console.log('Translation request:', { sourceText, sourceLang, targetLang });
             showStatus('번역 중...', 'info');
