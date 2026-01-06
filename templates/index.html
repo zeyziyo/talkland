@@ -18,6 +18,9 @@
     <!-- Theme Color -->
     <meta name="theme-color" content="#667eea">
 
+    <!-- IndexedDB -->
+    <script src="/static/db.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -184,6 +187,99 @@
             border-radius: 8px;
             font-size: 14px;
             margin-top: 5px;
+        }
+
+        /* 탭 메뉴 */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 모드 컨텐츠 */
+        .mode-content {
+            display: block;
+        }
+
+        /* 복습 카드 */
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .review-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .review-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .review-card .source {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .review-card .translated {
+            font-size: 18px;
+            color: #667eea;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 8px;
+        }
+
+        .review-card .meta {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+        }
+
+        .review-card .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
         }
     </style>
 </head>
